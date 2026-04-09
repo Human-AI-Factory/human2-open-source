@@ -1,0 +1,43 @@
+{
+  "appId": "com.toonflow.nextlite",
+  "productName": "Toonflow Next Lite",
+  "directories": {
+    "output": "release"
+  },
+  "electronDist": "node_modules/electron/dist",
+  "files": [
+    "desktop/**/*",
+    "frontend/dist/**/*",
+    "backend/dist/**/*",
+    "backend/node_modules/**/*",
+    "backend/package.json",
+    "package.json"
+  ],
+  "extraMetadata": {
+    "main": "desktop/main.cjs"
+  },
+  "protocols": [
+    {
+      "name": "Toonflow Workspace Link",
+      "schemes": ["toonflowlite"]
+    }
+  ],
+  "fileAssociations": [
+    {
+      "ext": "toonflow",
+      "name": "Toonflow Workspace",
+      "description": "Toonflow desktop workspace file",
+      "role": "Editor"
+    }
+  ],
+  "mac": {
+    "target": ["dmg"],
+    "category": "public.app-category.video"
+  },
+  "win": {
+    "target": ["nsis"]
+  },
+  "linux": {
+    "target": ["AppImage"]
+  }
+}

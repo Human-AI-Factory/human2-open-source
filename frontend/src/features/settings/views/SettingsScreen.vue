@@ -1036,9 +1036,9 @@ const scrollToSection = (section: SettingsSectionKey): void => {
   display: grid;
   gap: 18px;
   background:
-    radial-gradient(circle at top right, rgba(14, 91, 216, 0.12), transparent 28%),
-    radial-gradient(circle at bottom left, rgba(22, 163, 74, 0.1), transparent 30%),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(247, 250, 255, 0.98));
+    radial-gradient(circle at top right, var(--brand-glow), transparent 28%),
+    radial-gradient(circle at bottom left, var(--success-glow), transparent 30%),
+    var(--surface-panel-strong);
 }
 
 .settings-hero__copy {
@@ -1054,7 +1054,7 @@ const scrollToSection = (section: SettingsSectionKey): void => {
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #0e5bd8;
+  color: var(--brand);
   font-weight: 700;
 }
 
@@ -1076,10 +1076,10 @@ const scrollToSection = (section: SettingsSectionKey): void => {
   display: grid;
   gap: 6px;
   padding: 14px 16px;
-  border-radius: 16px;
-  border: 1px solid rgba(215, 223, 235, 0.95);
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--surface-glass);
+  box-shadow: var(--inset-highlight);
 }
 
 .settings-stat-card span,
@@ -1123,14 +1123,14 @@ const scrollToSection = (section: SettingsSectionKey): void => {
 .settings-rail__button {
   width: 100%;
   justify-content: flex-start;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 10px 12px;
-  background: linear-gradient(180deg, #fff, #f6f9ff);
+  background: var(--surface-panel-soft);
 }
 
 .settings-rail__divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(59, 72, 96, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, var(--status-neutral-border), transparent);
   margin: 4px 0;
 }
 
@@ -1158,11 +1158,9 @@ const scrollToSection = (section: SettingsSectionKey): void => {
   align-items: center;
   gap: 14px;
   padding: 12px 14px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 250, 255, 0.95)),
-    #fff;
-  border: 1px solid rgba(215, 223, 235, 0.95);
-  box-shadow: 0 10px 24px rgba(13, 30, 64, 0.06);
+  background: var(--surface-panel-strong);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
 }
 
 .settings-toolbar__sections,
@@ -1177,7 +1175,7 @@ const scrollToSection = (section: SettingsSectionKey): void => {
   min-height: 32px;
   padding: 7px 12px;
   border-radius: 999px;
-  background: linear-gradient(180deg, #fff, #f5f8ff);
+  background: var(--surface-panel-soft);
 }
 
 .settings-sidecar {
@@ -1253,10 +1251,10 @@ const scrollToSection = (section: SettingsSectionKey): void => {
 }
 
 .settings-model-card--selected {
-  border-color: rgba(14, 91, 216, 0.44);
+  border-color: var(--brand-line-strong);
   box-shadow:
-    0 12px 28px rgba(13, 30, 64, 0.08),
-    0 0 0 1px rgba(14, 91, 216, 0.08);
+    var(--shadow-lg),
+    0 0 0 1px var(--brand-tint);
 }
 
 .settings-model-card__copy {
@@ -1304,9 +1302,7 @@ const scrollToSection = (section: SettingsSectionKey): void => {
 }
 
 .settings-model-inspector {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 250, 255, 0.98)),
-    #fff;
+  background: var(--surface-panel-strong);
 }
 
 .settings-sidecar__shell {
@@ -1327,14 +1323,14 @@ const scrollToSection = (section: SettingsSectionKey): void => {
 .settings-sidecar__tabbar button {
   min-height: 34px;
   padding: 7px 10px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #fff, #f4f8ff);
+  border-radius: var(--radius-md);
+  background: var(--surface-panel-soft);
 }
 
 .settings-sidecar__tab--active {
-  border-color: rgba(14, 91, 216, 0.38);
-  background: linear-gradient(180deg, rgba(14, 91, 216, 0.1), rgba(14, 91, 216, 0.04));
-  color: #0e5bd8;
+  border-color: var(--brand-line);
+  background: linear-gradient(180deg, var(--brand-tint-strong), var(--brand-tint));
+  color: var(--brand);
 }
 
 .settings-model-inspector__head {
@@ -1352,9 +1348,9 @@ const scrollToSection = (section: SettingsSectionKey): void => {
   justify-content: space-between;
   gap: 12px;
   padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(248, 250, 252, 0.95);
-  border: 1px solid rgba(215, 223, 235, 0.8);
+  border-radius: var(--radius-md);
+  background: var(--surface-panel-soft);
+  border: 1px solid var(--line);
 }
 
 .settings-model-inspector__facts span {
@@ -1365,15 +1361,15 @@ const scrollToSection = (section: SettingsSectionKey): void => {
 .settings-import-warnings {
   padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(215, 223, 235, 0.9);
-  background: linear-gradient(180deg, #fff, #f8fbff);
+  border: 1px solid var(--line);
+  background: var(--surface-panel-soft);
 }
 
 .settings-disclosure {
-  border-radius: 16px;
-  border: 1px solid rgba(215, 223, 235, 0.94);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 10px 24px rgba(13, 30, 64, 0.05);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--surface-panel-translucent);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 
@@ -1433,9 +1429,9 @@ const scrollToSection = (section: SettingsSectionKey): void => {
   justify-content: space-between;
   gap: 12px;
   padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(220, 227, 237, 0.95);
-  background: linear-gradient(180deg, #fff, #f8fbff);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--surface-panel-soft);
 }
 
 .settings-sidecar__prompt-item {
@@ -1452,7 +1448,7 @@ const scrollToSection = (section: SettingsSectionKey): void => {
 .settings-drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 40, 0.36);
+  background: var(--surface-backdrop);
   backdrop-filter: blur(8px);
   z-index: 30;
   display: flex;
@@ -1492,7 +1488,7 @@ const scrollToSection = (section: SettingsSectionKey): void => {
   justify-content: flex-end;
   position: sticky;
   bottom: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), #fff 28%);
+  background: linear-gradient(180deg, transparent, var(--surface-canvas) 28%);
   padding-top: 10px;
 }
 
@@ -1511,17 +1507,17 @@ const scrollToSection = (section: SettingsSectionKey): void => {
   display: inline-flex;
   align-items: center;
   padding: 3px 9px;
-  border-radius: 999px;
-  border: 1px solid #d0d7de;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--status-neutral-border);
   font-size: 12px;
-  color: #334155;
-  background: #f8fafc;
+  color: var(--status-neutral-ink);
+  background: var(--status-neutral-bg);
 }
 
 .summary-tag--active {
-  border-color: rgba(14, 91, 216, 0.28);
-  color: #0e5bd8;
-  background: rgba(14, 91, 216, 0.08);
+  border-color: var(--status-info-border);
+  color: var(--status-info-ink);
+  background: var(--status-info-bg);
 }
 
 @media (max-width: 1180px) {

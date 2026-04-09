@@ -1225,7 +1225,7 @@ watch(stageEpisodeScope, () => {
 }
 
 .project-hero-panel {
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  background: var(--surface-spotlight);
 }
 
 .compact-panel :deep(.card) {
@@ -1246,18 +1246,19 @@ watch(stageEpisodeScope, () => {
 }
 
 .stage-card {
-  border: 1px solid #dde1ea;
-  border-radius: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-canvas);
   padding: 12px;
 }
 
 .stage-card.active {
-  border-color: #1f6feb;
-  box-shadow: 0 0 0 1px #1f6feb inset;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 1px var(--brand) inset;
 }
 
 .stage-card.done {
-  background: #f0f8ff;
+  background: var(--status-info-bg);
 }
 
 .stage-tip {
@@ -1265,7 +1266,7 @@ watch(stageEpisodeScope, () => {
 }
 
 .stage-blocker {
-  color: #b54708;
+  color: var(--status-warning-ink);
   font-size: 12px;
 }
 
@@ -1321,8 +1322,9 @@ watch(stageEpisodeScope, () => {
 
 .writing-outline-preview {
   padding: 12px;
-  border-radius: 10px;
-  background: #f8fafc;
+  border-radius: var(--radius-sm);
+  background: var(--card-soft);
+  border: 1px solid var(--line);
 }
 
 .writing-list {
@@ -1333,17 +1335,17 @@ watch(stageEpisodeScope, () => {
 .writing-list-item {
   width: 100%;
   text-align: left;
-  border: 1px solid #dde1ea;
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   padding: 10px 12px;
-  background: #fff;
+  background: var(--surface-canvas);
   cursor: pointer;
 }
 
 .writing-list-item.active {
-  border-color: #1f6feb;
-  box-shadow: 0 0 0 1px #1f6feb inset;
-  background: #f0f7ff;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 1px var(--brand) inset;
+  background: var(--status-info-bg);
 }
 
 .writing-inline-select {
@@ -1361,30 +1363,35 @@ watch(stageEpisodeScope, () => {
 
 .tag {
   display: inline-block;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
   padding: 4px 10px;
   font-size: 12px;
   line-height: 1;
 }
 
 .tag-draft {
-  background: #f2f4f8;
-  color: #374151;
+  background: var(--status-neutral-bg);
+  border-color: var(--status-neutral-border);
+  color: var(--status-neutral-ink);
 }
 
 .tag-in_review {
-  background: #fff4db;
-  color: #9a6700;
+  background: var(--status-warning-bg);
+  border-color: var(--status-warning-border);
+  color: var(--status-warning-ink);
 }
 
 .tag-approved {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--status-success-bg);
+  border-color: var(--status-success-border);
+  color: var(--status-success-ink);
 }
 
 .tag-rejected {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--status-danger-bg);
+  border-color: var(--status-danger-border);
+  color: var(--status-danger-ink);
 }
 
 @media (max-width: 960px) {

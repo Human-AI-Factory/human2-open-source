@@ -173,8 +173,8 @@ onMounted(async () => {
 }
 
 .director-studio-hero {
-  border: 1px solid #d9e4ff;
-  background: linear-gradient(160deg, #f6fbff 0%, #eef4ff 100%);
+  border: 1px solid var(--status-info-border);
+  background: var(--surface-spotlight-angled);
 }
 
 .nav-grid {
@@ -184,9 +184,9 @@ onMounted(async () => {
 }
 
 .nav-card {
-  border: 1px solid #d8e0ee;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: #f8fbff;
+  background: var(--surface-spotlight);
 }
 
 </style>

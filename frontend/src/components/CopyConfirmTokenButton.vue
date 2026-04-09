@@ -27,9 +27,9 @@ const isCopied = computed(() => props.copiedSource === props.source);
 
 <style scoped>
 button.copied {
-  background: #e9f9ef;
-  border-color: #5cc18d;
-  color: #0f7a43;
+  background: var(--status-success-bg);
+  border-color: var(--status-success-border);
+  color: var(--status-success-ink);
 }
 
 button.copied:disabled {

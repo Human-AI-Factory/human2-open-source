@@ -210,10 +210,10 @@ const selectedPresetNameModel = computed({
 
 <style scoped>
 .filter-panel {
-  border: 1px solid #dbe3f1;
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 12px;
-  background: #fbfdff;
+  background: var(--surface-panel-soft);
   position: sticky;
   top: 10px;
 }
@@ -221,7 +221,7 @@ const selectedPresetNameModel = computed({
 .filter-panel h3 {
   margin: 0 0 8px;
   font-size: 14px;
-  color: #0f172a;
+  color: var(--ink-1);
 }
 
 .filter-grid {
@@ -236,7 +236,7 @@ const selectedPresetNameModel = computed({
 
 .control span {
   font-size: 12px;
-  color: #475569;
+  color: var(--ink-2);
 }
 
 .compact-actions {

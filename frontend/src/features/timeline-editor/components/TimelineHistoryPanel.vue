@@ -41,9 +41,9 @@ defineProps<{
 <style scoped>
 .timeline-ops-panel {
   margin-top: 10px;
-  border: 1px solid #d7deea;
+  border: 1px solid var(--line);
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--surface-panel-soft);
   padding: 10px;
   display: grid;
   gap: 8px;

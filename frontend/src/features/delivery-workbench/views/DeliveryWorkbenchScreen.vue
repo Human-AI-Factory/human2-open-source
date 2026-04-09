@@ -757,8 +757,8 @@ onMounted(() => {
   position: sticky;
   top: 12px;
   z-index: 3;
-  border: 1px solid #bdd5ff;
-  background: linear-gradient(135deg, #f7fbff, #eef6ff);
+  border: 1px solid var(--status-info-border);
+  background: var(--surface-highlight);
 }
 
 .merge-error-detail {
@@ -772,8 +772,8 @@ onMounted(() => {
   white-space: pre-wrap;
   word-break: break-word;
   border-radius: 10px;
-  background: #10151d;
-  color: #f5f7fb;
+  background: var(--surface-code-dark);
+  color: var(--card);
 }
 
 </style>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toonflow Queue Status</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #0b1220;
+        color: #dbe7ff;
+      }
+      .wrap {
+        padding: 12px;
+        display: grid;
+        gap: 10px;
+      }
+      .head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .lamp {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+      }
+      .card {
+        border: 1px solid #22304d;
+        border-radius: 10px;
+        background: #0f1a2f;
+        padding: 8px;
+      }
+      .muted {
+        color: #96a9cc;
+        font-size: 12px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .metric {
+        border: 1px solid #2a3a5f;
+        border-radius: 8px;
+        background: #101d35;
+        padding: 6px;
+      }
+      .metric b {
+        display: block;
+        font-size: 15px;
+        margin-top: 4px;
+      }
+      .trend {
+        font-size: 18px;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <strong>Queue Status Panel</strong>
+          <div id="updatedAt" class="muted">--</div>
+        </div>
+        <div id="lamp" class="lamp"></div>
+      </div>
+      <div class="card">
+        <div id="summary" class="muted">等待数据...</div>
+      </div>
+      <div class="grid">
+        <div class="metric">
+          <span class="muted">Queued</span>
+          <b id="queued">0</b>
+        </div>
+        <div class="metric">
+          <span class="muted">Running</span>
+          <b id="running">0</b>
+        </div>
+        <div class="metric">
+          <span class="muted">Avg Delay</span>
+          <b id="avgDelay">0ms</b>
+        </div>
+      </div>
+      <div class="card">
+        <div class="muted">Pump Delay Trend</div>
+        <div id="trend" class="trend">-</div>
+      </div>
+    </div>
+    <script>
+      const lamp = document.getElementById('lamp');
+      const updatedAt = document.getElementById('updatedAt');
+      const summary = document.getElementById('summary');
+      const queued = document.getElementById('queued');
+      const running = document.getElementById('running');
+      const avgDelay = document.getElementById('avgDelay');
+      const trend = document.getElementById('trend');
+
+      const render = (payload) => {
+        const level = payload?.level || 'green';
+        lamp.style.background = level === 'red' ? '#ef4444' : level === 'yellow' ? '#f59e0b' : '#22c55e';
+        lamp.style.boxShadow =
+          level === 'red'
+            ? '0 0 12px rgba(239,68,68,0.85)'
+            : level === 'yellow'
+              ? '0 0 12px rgba(245,158,11,0.85)'
+              : '0 0 12px rgba(34,197,94,0.85)';
+        const s = payload?.summary || {};
+        updatedAt.textContent = payload?.updatedAt || '--';
+        summary.textContent = `level=${String(level).toUpperCase()} · paused=${payload?.queuePaused ? 'yes' : 'no'} · total=${s.total || 0}`;
+        queued.textContent = String(s.queued || 0);
+        running.textContent = String(s.running || 0);
+        avgDelay.textContent = `${payload?.avgPumpDelayMs || 0}ms`;
+        trend.textContent = payload?.trend || '-';
+      };
+
+      if (window.toonflowStatusPanel?.onStatusUpdated) {
+        window.toonflowStatusPanel.onStatusUpdated((payload) => render(payload || {}));
+      }
+    </script>
+  </body>
+</html>

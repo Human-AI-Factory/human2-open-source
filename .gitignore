@@ -3,8 +3,10 @@ node_modules/
 .pnp
 .pnp.js
 
-# Desktop app (not source code - provide download link in README)
-desktop/
+# Desktop app artifacts
+desktop/release/
+/release/
+/.cache/
 
 # Build outputs
 backend/dist/

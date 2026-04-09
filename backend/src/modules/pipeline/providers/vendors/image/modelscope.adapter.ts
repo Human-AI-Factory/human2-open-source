@@ -80,7 +80,7 @@ export const modelscopeImageAdapter: VendorImageAdapter = createImagePollingReci
   onPoll: (_ctx, data) =>
     readPollingUrlResult(data, {
       statusPaths: ['task_status', 'taskStatus', 'status', 'data.task_status', 'data.taskStatus', 'data.status'],
-      successStatuses: ['succeeded', 'success', 'completed', 'done'],
+      successStatuses: ['succeed', 'succeeded', 'success', 'completed', 'done'],
       failureStatuses: ['failed', 'error', 'cancelled'],
       urlArrayPaths: [
         { arrayPaths: ['output_images', 'outputImages', 'data.output_images', 'data.outputImages'], itemPaths: ['url', 'image_url', 'imageUrl'] }

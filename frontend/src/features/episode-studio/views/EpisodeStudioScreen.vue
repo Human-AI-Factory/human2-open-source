@@ -388,8 +388,8 @@ onMounted(() => {
 }
 
 .episode-card--active {
-  border-color: #2f6fec;
-  box-shadow: 0 12px 28px rgba(47, 111, 236, 0.12);
+  border-color: var(--brand);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-1px);
 }
 

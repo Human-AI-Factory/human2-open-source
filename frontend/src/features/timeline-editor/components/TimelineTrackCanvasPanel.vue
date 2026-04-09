@@ -130,7 +130,7 @@ defineProps<{
   position: relative;
   height: 22px;
   margin: 8px 0 10px;
-  border-bottom: 1px dashed #c1ccde;
+  border-bottom: 1px dashed var(--line-strong);
 }
 
 .playhead-line {
@@ -138,7 +138,7 @@ defineProps<{
   top: 0;
   bottom: 0;
   width: 2px;
-  background: rgba(239, 68, 68, 0.85);
+  background: var(--status-danger-fill);
   pointer-events: none;
   transform: translateX(-1px);
   z-index: 4;
@@ -147,7 +147,7 @@ defineProps<{
 .playhead-line.lane {
   top: 0;
   bottom: 0;
-  background: rgba(239, 68, 68, 0.6);
+  background: var(--status-danger-fill-soft);
 }
 
 .tick {
@@ -155,7 +155,7 @@ defineProps<{
   top: 0;
   transform: translateX(-50%);
   font-size: 11px;
-  color: #60708a;
+  color: var(--ink-2);
 }
 
 .timeline-lane {
@@ -164,31 +164,31 @@ defineProps<{
 
 .lane-title {
   font-size: 13px;
-  color: #334155;
+  color: var(--ink-1);
   margin-bottom: 4px;
 }
 
 .lane-bars {
   position: relative;
   min-height: 32px;
-  background: #eef3fb;
-  border: 1px solid #d7deea;
-  border-radius: 8px;
+  background: var(--card-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 .lane-bars.file-drop-active {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) inset;
+  border-color: var(--brand);
+  box-shadow: inset 0 0 0 2px var(--brand-glow);
 }
 
 .lane-bar {
   position: absolute;
   top: 4px;
   bottom: 4px;
-  background: linear-gradient(135deg, #2f6fed, #5a8cff);
+  background: linear-gradient(135deg, var(--meter-brand-start), var(--meter-brand-end));
   border-radius: 6px;
-  color: #fff;
+  color: var(--card);
   font-size: 12px;
   display: flex;
   align-items: center;
@@ -209,12 +209,12 @@ defineProps<{
 }
 
 .lane-bar.bar-drop-target {
-  outline: 2px dashed rgba(255, 255, 255, 0.9);
+  outline: 2px dashed var(--contrast-solid);
   outline-offset: -2px;
 }
 
 .lane-bar.bar-selected {
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 0 0 2px var(--contrast-solid);
 }
 
 .dock-insert-indicator {
@@ -222,8 +222,8 @@ defineProps<{
   top: 0;
   bottom: 0;
   width: 2px;
-  background: #f59e0b;
-  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.35);
+  background: var(--status-warning-ink);
+  box-shadow: 0 0 0 1px var(--status-warning-line-soft);
   transform: translateX(-1px);
   pointer-events: none;
   z-index: 6;
@@ -235,10 +235,10 @@ defineProps<{
   right: 8px;
   margin: 0;
   font-size: 11px;
-  color: #1d4ed8;
-  background: rgba(219, 234, 254, 0.95);
-  border: 1px solid rgba(37, 99, 235, 0.35);
-  border-radius: 999px;
+  color: var(--status-info-ink);
+  background: var(--status-info-bg);
+  border: 1px solid var(--status-info-border);
+  border-radius: var(--radius-pill);
   padding: 2px 8px;
   z-index: 7;
   pointer-events: none;
@@ -248,8 +248,8 @@ defineProps<{
   position: absolute;
   top: 2px;
   bottom: 2px;
-  border: 1px dashed #2f6fed;
-  background: rgba(47, 111, 237, 0.14);
+  border: 1px dashed var(--brand);
+  background: var(--brand-glow);
   border-radius: 6px;
   pointer-events: none;
 }
@@ -260,7 +260,7 @@ defineProps<{
   bottom: 2px;
   width: 8px;
   border: 0;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--contrast-mid);
   cursor: ew-resize;
   padding: 0;
 }

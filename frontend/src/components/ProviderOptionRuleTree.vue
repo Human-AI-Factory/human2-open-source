@@ -325,20 +325,20 @@ const pasteRule = (idx: number): void => {
 .rule-children {
   margin-top: 8px;
   padding-left: 12px;
-  border-left: 2px solid #e2e8f0;
+  border-left: 2px solid var(--line);
 }
 
 .drag-over {
-  outline: 2px dashed #3b82f6;
+  outline: 2px dashed var(--brand);
   outline-offset: 2px;
 }
 
 .search-match {
-  box-shadow: 0 0 0 2px #f59e0b inset;
+  box-shadow: 0 0 0 2px var(--warning) inset;
 }
 
 .search-active {
-  box-shadow: 0 0 0 2px #f59e0b inset, 0 0 0 3px #0ea5e9;
+  box-shadow: 0 0 0 2px var(--warning) inset, 0 0 0 3px var(--brand-glow-strong);
 }
 
 .match-stat {

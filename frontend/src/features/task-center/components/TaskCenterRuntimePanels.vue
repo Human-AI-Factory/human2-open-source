@@ -965,39 +965,32 @@ const fiErrorCodeFilterModel = computed({
   gap: 10px;
 }
 
-.metric-card {
-  border: 1px solid #dbe3f1;
-  border-radius: 10px;
-  padding: 10px;
-  background: #f8fbff;
-}
-
 .status-lamp {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   display: inline-block;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--line-strong);
 }
 
 .status-green {
-  background: #16a34a;
+  background: var(--success);
 }
 
 .status-yellow {
-  background: #eab308;
+  background: var(--warning);
 }
 
 .status-red {
-  background: #dc2626;
+  background: var(--danger);
 }
 
 .runtime-trend {
   margin-top: 8px;
-  border: 1px solid #dbe3f1;
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   padding: 8px;
-  background: #f8fbff;
+  background: var(--card-soft);
 }
 
 .runtime-trend svg {
@@ -1013,31 +1006,15 @@ const fiErrorCodeFilterModel = computed({
 }
 
 .runtime-trend .line-queued {
-  stroke: #2563eb;
+  stroke: var(--status-info-ink);
 }
 
 .runtime-trend .line-running {
-  stroke: #7c3aed;
+  stroke: var(--status-accent-ink);
 }
 
 .runtime-trend .line-pump {
-  stroke: #0f766e;
-}
-
-.chip-row {
-  margin-top: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chip {
-  border: 1px solid #d0d7de;
-  border-radius: 999px;
-  padding: 2px 10px;
-  background: #f8fafc;
-  color: #334155;
-  font-size: 12px;
+  stroke: var(--status-success-ink);
 }
 
 @media (max-width: 980px) {

@@ -152,12 +152,12 @@
         </g>
       </svg>
       <div class="orchestrator-legend">
-        <span class="badge badge-idle">idle</span>
-        <span class="badge badge-running">running</span>
-        <span class="badge badge-success">success</span>
-        <span class="badge badge-skipped">skipped</span>
-        <span class="badge badge-failed">failed</span>
-        <span class="badge badge-rolled-back">rolled_back</span>
+        <span class="status-pill status-pill--neutral">idle</span>
+        <span class="status-pill status-pill--warning">running</span>
+        <span class="status-pill status-pill--success">success</span>
+        <span class="status-pill status-pill--neutral">skipped</span>
+        <span class="status-pill status-pill--danger">failed</span>
+        <span class="status-pill status-pill--warning">rolled_back</span>
       </div>
     </div>
     <div v-if="selectedOrchestratorStep" class="orchestrator-inline-editor">
@@ -355,17 +355,18 @@ const orchestratorRollbackStrategyModel = computed({
   position: sticky;
   top: 12px;
   z-index: 5;
-  border: 1px solid #c7d7f4;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #ffffff 0%, #f6f9ff 100%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-panel-strong);
+  box-shadow: var(--shadow-sm);
   padding: 10px;
   margin-bottom: 10px;
 }
 
 .orchestrator-flow {
-  border: 1px solid #d7deea;
-  border-radius: 10px;
-  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-canvas);
   padding: 8px;
   margin-bottom: 8px;
 }
@@ -383,49 +384,49 @@ const orchestratorRollbackStrategyModel = computed({
 }
 
 .flow-edge.success {
-  stroke: #4b5563;
+  stroke: var(--ink-2);
 }
 
 .flow-edge.failure {
-  stroke: #ef4444;
+  stroke: var(--status-danger-ink);
   stroke-dasharray: 6 4;
 }
 
 .flow-edge.rollback {
-  stroke: #f59e0b;
+  stroke: var(--status-warning-ink);
   stroke-dasharray: 4 4;
 }
 
 .flow-edge.jump {
-  stroke: #7c3aed;
+  stroke: var(--status-accent-ink);
   stroke-dasharray: 3 3;
 }
 
 .flow-edge.running {
-  stroke: #3b82f6;
+  stroke: var(--status-info-ink);
 }
 
 .flow-edge.success.success {
-  stroke: #16a34a;
+  stroke: var(--status-success-ink);
 }
 
 .flow-edge.failure.failed {
-  stroke: #dc2626;
+  stroke: var(--status-danger-ink);
 }
 
 .flow-edge.rollback.rolled_back {
-  stroke: #ca8a04;
+  stroke: var(--status-warning-ink);
 }
 
 .flow-edge-label {
-  fill: #4c1d95;
+  fill: var(--status-accent-ink);
   font-size: 10px;
   font-weight: 600;
 }
 
 .flow-node {
-  fill: #f8fafc;
-  stroke: #cbd5e1;
+  fill: var(--surface-canvas);
+  stroke: var(--line-strong);
   stroke-width: 1.5;
 }
 
@@ -439,62 +440,62 @@ const orchestratorRollbackStrategyModel = computed({
 }
 
 .flow-node.selected {
-  stroke: #2563eb;
+  stroke: var(--brand);
   stroke-width: 2;
 }
 
 .flow-node.start {
-  fill: #f0f9ff;
+  fill: var(--status-info-bg);
 }
 
 .flow-node.success {
-  fill: #f0fdf4;
+  fill: var(--status-success-bg);
 }
 
 .flow-node.failure {
-  fill: #fef2f2;
+  fill: var(--status-danger-bg);
 }
 
 .flow-node.running {
-  stroke: #3b82f6;
+  stroke: var(--status-info-ink);
   stroke-width: 2;
 }
 
 .flow-node.success.success {
-  stroke: #16a34a;
+  stroke: var(--status-success-ink);
 }
 
 .flow-node.failed {
-  stroke: #dc2626;
+  stroke: var(--status-danger-ink);
 }
 
 .flow-node.skipped {
-  stroke: #64748b;
+  stroke: var(--status-neutral-ink);
   stroke-dasharray: 4 3;
 }
 
 .flow-node.rolled_back {
-  stroke: #ca8a04;
+  stroke: var(--status-warning-ink);
 }
 
 .flow-node-title {
-  fill: #0f172a;
+  fill: var(--ink-1);
   font-size: 12px;
   font-weight: 600;
 }
 
 .flow-node-subtitle {
-  fill: #475569;
+  fill: var(--ink-2);
   font-size: 11px;
 }
 
 .flow-node-badge-box {
-  fill: #0f172a;
+  fill: var(--ink-1);
   opacity: 0.88;
 }
 
 .flow-node-badge-text {
-  fill: #f8fafc;
+  fill: var(--card);
   font-size: 9px;
   font-weight: 700;
 }
@@ -504,13 +505,13 @@ const orchestratorRollbackStrategyModel = computed({
 }
 
 .flow-node-tooltip-box {
-  fill: rgba(15, 23, 42, 0.94);
-  stroke: rgba(148, 163, 184, 0.85);
+  fill: var(--surface-tooltip);
+  stroke: var(--tooltip-line);
   stroke-width: 1;
 }
 
 .flow-node-tooltip-text {
-  fill: #f8fafc;
+  fill: var(--card);
   font-size: 10px;
   font-weight: 500;
 }
@@ -520,12 +521,12 @@ const orchestratorRollbackStrategyModel = computed({
 }
 
 .flow-node-tooltip-copy-btn {
-  fill: #1d4ed8;
+  fill: var(--brand);
   opacity: 0.95;
 }
 
 .flow-node-tooltip-copy-text {
-  fill: #eff6ff;
+  fill: var(--status-info-bg);
   font-size: 10px;
   font-weight: 700;
 }
@@ -539,48 +540,9 @@ const orchestratorRollbackStrategyModel = computed({
 
 .orchestrator-inline-editor {
   margin: 8px 0;
-  border: 1px solid #d7deea;
-  border-radius: 10px;
-  background: #f8fbff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card-soft);
   padding: 8px;
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.badge-idle {
-  background: #e2e8f0;
-  color: #334155;
-}
-
-.badge-running {
-  background: #dbeafe;
-  color: #1d4ed8;
-}
-
-.badge-success {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.badge-skipped {
-  background: #e2e8f0;
-  color: #475569;
-}
-
-.badge-failed {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.badge-rolled-back {
-  background: #fef3c7;
-  color: #92400e;
 }
 </style>

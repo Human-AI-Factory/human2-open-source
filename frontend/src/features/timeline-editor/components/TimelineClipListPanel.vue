@@ -75,9 +75,9 @@ defineProps<{
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid #d7deea;
-  border-radius: 10px;
-  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-panel-soft);
   padding: 10px;
   cursor: pointer;
 }
@@ -98,13 +98,13 @@ defineProps<{
 }
 
 .clip-row.selected {
-  border-color: #2f6fed;
-  box-shadow: 0 0 0 2px rgba(47, 111, 237, 0.12);
+  border-color: var(--brand);
+  box-shadow: var(--selection-ring);
 }
 
 .clip-row.range-selected:not(.selected) {
-  border-color: #6b8fd6;
-  box-shadow: 0 0 0 1px rgba(107, 143, 214, 0.2);
+  border-color: var(--status-info-border);
+  box-shadow: var(--selection-ring-soft);
 }
 
 .clip-row.dragging {
@@ -118,7 +118,7 @@ defineProps<{
 .clip-handle {
   width: 22px;
   text-align: center;
-  color: #65748b;
+  color: var(--ink-2);
   font-weight: 700;
   user-select: none;
 }
@@ -128,11 +128,11 @@ defineProps<{
 }
 
 .drop-end {
-  border: 1px dashed #a8b4c9;
-  border-radius: 10px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
   padding: 10px;
-  color: #65748b;
+  color: var(--ink-2);
   text-align: center;
-  background: #f9fbff;
+  background: var(--card-soft);
 }
 </style>

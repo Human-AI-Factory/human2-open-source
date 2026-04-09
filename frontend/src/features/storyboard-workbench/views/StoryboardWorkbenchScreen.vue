@@ -390,8 +390,8 @@ onMounted(async () => {
 }
 
 .storyboard-card--active {
-  border-color: #2f6fec;
-  box-shadow: 0 0 0 2px rgba(47, 111, 236, 0.2);
+  border-color: var(--brand);
+  box-shadow: var(--selection-ring);
 }
 
 .storyboard-copy {
@@ -411,7 +411,7 @@ onMounted(async () => {
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #2f6fec;
+  color: var(--brand);
 }
 
 .storyboard-heading h4 {
@@ -428,9 +428,9 @@ onMounted(async () => {
 .storyboard-meta-card,
 .storyboard-detail-card,
 .storyboard-prompt-box {
-  border: 1px solid #d6deef;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #fbfcff 0%, #f4f7ff 100%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-panel-soft);
 }
 
 .storyboard-meta-card {
@@ -444,14 +444,14 @@ onMounted(async () => {
   margin-bottom: 6px;
   font-size: 12px;
   letter-spacing: 0.04em;
-  color: #6a7486;
+  color: var(--ink-2);
 }
 
 .storyboard-meta-card strong {
   display: block;
   font-size: 15px;
   line-height: 1.4;
-  color: #132238;
+  color: var(--ink-1);
 }
 
 .storyboard-detail-grid {
@@ -469,7 +469,7 @@ onMounted(async () => {
 .storyboard-prompt-box p {
   margin: 0;
   line-height: 1.6;
-  color: #132238;
+  color: var(--ink-1);
 }
 
 .storyboard-prompt-box {
@@ -487,15 +487,15 @@ onMounted(async () => {
   justify-content: center;
   min-height: 220px;
   padding: 10px;
-  border: 1px solid #d6deef;
-  border-radius: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
   background:
-    radial-gradient(circle at top, rgba(47, 111, 236, 0.12), transparent 48%),
-    linear-gradient(180deg, #f5f8ff 0%, #edf3ff 100%);
+    radial-gradient(circle at top, var(--brand-glow), transparent 48%),
+    var(--surface-spotlight);
 }
 
 .storyboard-preview.empty {
-  color: #6a7486;
+  color: var(--ink-2);
 }
 
 .inspector-preview {
@@ -507,7 +507,7 @@ onMounted(async () => {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   border-radius: 8px;
-  background: #f5f8ff;
+  background: var(--surface-hover);
 }
 
 .storyboard-media-actions {
@@ -516,7 +516,7 @@ onMounted(async () => {
 }
 
 .storyboard-media-actions a {
-  color: #2f6fec;
+  color: var(--brand);
   font-weight: 600;
 }
 
@@ -527,8 +527,8 @@ onMounted(async () => {
 }
 
 .route-focus {
-  border-color: #2f6fec;
-  box-shadow: 0 0 0 2px rgba(47, 111, 236, 0.2);
+  border-color: var(--brand);
+  box-shadow: var(--selection-ring);
 }
 
 @media (max-width: 1100px) {

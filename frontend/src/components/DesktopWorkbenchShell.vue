@@ -39,20 +39,20 @@ withDefaults(
 .desktop-workbench-shell {
   --rail-width: 280px;
   --inspector-width: 360px;
-  --pane-radius: 18px;
-  --pane-line: rgba(172, 188, 214, 0.7);
-  --pane-bg: rgba(255, 255, 255, 0.88);
-  --pane-shadow: 0 18px 40px rgba(15, 23, 40, 0.08);
+  --pane-radius: var(--radius-2xl);
+  --pane-line: var(--line);
+  --pane-bg: var(--surface-panel-strong);
+  --pane-shadow: var(--shadow-xl);
   display: grid;
   grid-template-columns: minmax(220px, var(--rail-width)) minmax(0, 1fr) minmax(280px, var(--inspector-width));
-  gap: 18px;
+  gap: var(--space-9);
   min-height: calc(100vh - 112px);
   max-height: calc(100vh - 112px);
   align-items: stretch;
 }
 
 .desktop-workbench-shell--compact {
-  gap: 14px;
+  gap: var(--space-7);
 }
 
 .desktop-workbench-shell__rail,
@@ -71,22 +71,21 @@ withDefaults(
   border: 1px solid var(--pane-line);
   background: var(--pane-bg);
   box-shadow: var(--pane-shadow);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(22px);
   overflow: hidden;
 }
 
 .desktop-workbench-shell__pane--main {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 252, 255, 0.94) 100%);
+  background: var(--surface-panel-strong);
 }
 
 .desktop-workbench-shell__scroll {
   min-height: 0;
   height: 100%;
   overflow-y: auto;
-  padding: 16px;
+  padding: var(--space-8);
   scrollbar-width: thin;
-  scrollbar-color: rgba(120, 143, 183, 0.5) transparent;
+  scrollbar-color: var(--status-neutral-border) transparent;
 }
 
 .desktop-workbench-shell__scroll::-webkit-scrollbar {
@@ -95,13 +94,13 @@ withDefaults(
 
 .desktop-workbench-shell__scroll::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: rgba(120, 143, 183, 0.45);
+  background: var(--status-neutral-border);
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 .desktop-workbench-shell__scroll > :deep(*) {
-  margin-bottom: 14px;
+  margin-bottom: var(--space-6);
 }
 
 .desktop-workbench-shell__scroll > :deep(*:last-child) {
@@ -141,7 +140,7 @@ withDefaults(
     height: auto;
     max-height: none;
     overflow: visible;
-    padding: 14px;
+    padding: var(--space-7);
   }
 }
 

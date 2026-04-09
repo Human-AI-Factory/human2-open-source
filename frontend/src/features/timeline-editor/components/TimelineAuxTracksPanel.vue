@@ -156,9 +156,9 @@ defineProps<{
 }
 
 .track-card {
-  border: 1px solid #d7deea;
-  border-radius: 10px;
-  background: #f8fbff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-spotlight);
   padding: 10px;
   display: grid;
   gap: 8px;
@@ -170,9 +170,9 @@ defineProps<{
 }
 
 .track-clip-row {
-  border: 1px solid #d7deea;
-  border-radius: 8px;
-  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-panel-soft);
   padding: 8px;
 }
 
@@ -181,12 +181,12 @@ defineProps<{
 }
 
 .drop-end {
-  border: 1px dashed #a8b4c9;
-  border-radius: 10px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
   padding: 10px;
-  color: #65748b;
+  color: var(--ink-2);
   text-align: center;
-  background: #f9fbff;
+  background: var(--card-soft);
 }
 
 @media (max-width: 980px) {

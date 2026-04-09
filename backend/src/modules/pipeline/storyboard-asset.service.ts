@@ -226,6 +226,49 @@ const sanitizeStoryboardValue = (
   return hasInvalidStoryboardPrefix(next) ? '' : next;
 };
 
+const TIME_DESCRIPTOR_PREFIXES = [
+  '凌晨',
+  '黎明',
+  '清晨',
+  '清早',
+  '早晨',
+  '上午',
+  '中午',
+  '正午',
+  '午后',
+  '下午',
+  '傍晚',
+  '黄昏',
+  '入夜',
+  '深夜',
+  '午夜',
+  '夜晚',
+  '夜里',
+  '夜间',
+  '晨间',
+  '晚间',
+  '白天',
+  '白昼',
+  '日出',
+  '日落',
+  '雨夜',
+  '雪夜',
+] as const;
+
+const looksLikeTimeDescriptor = (value: string): boolean => {
+  const scope = sanitizeStoryboardValue(value, ['时间'], { allowStandalone: true });
+  if (!scope) {
+    return false;
+  }
+  if (/^[\d零一二三四五六七八九十两百半]+(?:点|时|分|刻)(?:半)?(?:[\s、，,／/｜-].*)?$/u.test(scope)) {
+    return true;
+  }
+  if (scope === '夜') {
+    return true;
+  }
+  return TIME_DESCRIPTOR_PREFIXES.some((prefix) => scope === prefix || scope.startsWith(prefix));
+};
+
 const truncateForModel = (content: string, maxChars: number): string => {
   if (content.length <= maxChars) {
     return content;
@@ -240,7 +283,8 @@ const splitSceneAndTime = (heading: string, explicitTime = ''): { scene: string;
     .map((part) => collapseWhitespace(part))
     .filter(Boolean);
   const scene = parts[0] ?? '';
-  const time = sanitizeStoryboardValue(explicitTime || parts[1] || '', ['时间'], { allowStandalone: true });
+  const timeCandidate = explicitTime || (looksLikeTimeDescriptor(parts[1] ?? '') ? parts[1] ?? '' : '');
+  const time = sanitizeStoryboardValue(timeCandidate, ['时间'], { allowStandalone: true });
   return { scene, time };
 };
 
@@ -316,28 +360,43 @@ const buildFinalImagePrompt = (plan: Pick<StoryboardPlan, 'scene' | 'time' | 'su
       .join('；')
   );
 
+const isCharacterTokenCandidate = (value: string): boolean => {
+  const normalized = collapseWhitespace(value);
+  if (!normalized || NON_PERSON_NAME_TOKENS.has(normalized)) {
+    return false;
+  }
+  return !/[场景镜头时间动作光线天气羊群雪原草地孩子人物主体公寓楼下楼道入口走廊会议室海边工作室]/u.test(
+    normalized
+  );
+};
+
 const extractCharacterNames = (plan: StoryboardPlan): string[] => {
+  const subject = sanitizeStoryboardValue(plan.subject, ['主体', '人物', '角色'], { allowStandalone: true });
+  const subjectTokens = subject
+    .split(/[、，,和与及/]/u)
+    .map((item) => collapseWhitespace(item))
+    .filter((item) => isCharacterTokenCandidate(item));
+  if (subjectTokens.length > 0) {
+    return uniqueIds(subjectTokens).slice(0, 3);
+  }
   const source = `${plan.subject} ${plan.action}`;
   const matches = source.match(/[\p{Script=Han}]{2,4}/gu) ?? [];
-  return uniqueIds(
-    matches.filter((item) => {
-      const normalized = item.trim();
-      if (!normalized || NON_PERSON_NAME_TOKENS.has(normalized)) {
-        return false;
-      }
-      return !/[场景镜头时间动作光线天气羊群雪原草地姐妹孩子人物主体]/u.test(normalized);
-    })
-  ).slice(0, 3);
+  return uniqueIds(matches.map((item) => item.trim()).filter((item) => isCharacterTokenCandidate(item))).slice(0, 3);
+};
+
+const deriveCharacterSeedToken = (plan: StoryboardPlan): string => {
+  const names = extractCharacterNames(plan);
+  if (names.length > 0) {
+    return names.join('与').slice(0, 24);
+  }
+  const subject = sanitizeStoryboardValue(plan.subject, ['主体', '人物', '角色'], { allowStandalone: true });
+  return isCharacterTokenCandidate(subject) ? subject.slice(0, 24) : '';
 };
 
 const deriveCharacterBaseLabel = (storyboard: Storyboard, plan: StoryboardPlan): string => {
-  const names = extractCharacterNames(plan);
-  if (names.length > 0) {
-    return `${names.join('与')}-角色主资产`;
-  }
-  const subject = sanitizeStoryboardValue(plan.subject, ['主体'], { allowStandalone: true });
-  if (subject) {
-    return `${subject.slice(0, 24)}-角色主资产`;
+  const token = deriveCharacterSeedToken(plan);
+  if (token) {
+    return `${token}-角色主资产`;
   }
   return `${storyboard.title}-角色主资产`;
 };
@@ -522,9 +581,7 @@ const parseStructuredScriptBlocks = (script: Script): ParsedScriptSceneBlock[] =
       const scene = parts[0] || '';
       // Second part is time (if it looks like a time)
       const potentialTime = parts[1] || '';
-      const hasExplicitTime = /^[\d一二三四五六七八九十]+[点时分]/.test(potentialTime) ||
-        /^[上下午晚晨夜黎明黄昏]/.test(potentialTime) ||
-        /^[正午凌晨]/.test(potentialTime);
+      const hasExplicitTime = looksLikeTimeDescriptor(potentialTime);
 
       // Remaining parts are the description/action
       const remainingParts = hasExplicitTime ? parts.slice(2) : parts.slice(1);
@@ -791,7 +848,6 @@ ${script.content}
     try {
       extracted = JSON.parse(result.text);
     } catch {
-      console.error('[extractAndCreateEntitiesFromScript] Failed to parse LLM response:', result.text);
       return null;
     }
 
@@ -834,8 +890,6 @@ ${script.content}
     const newCharacters = createdCharacters.filter((c) => !existingCharacterNames.has(c.name));
     const newScenes = createdScenes.filter((s) => !existingSceneNames.has(s.name));
 
-    console.log(`[extractAndCreateEntitiesFromScript] Created ${createdCharacters.length} characters (${newCharacters.length} new) and ${createdScenes.length} scenes (${newScenes.length} new) from script ${scriptId}`);
-
     // 如果有episodeId，将新创建的实体链接到Episode（作为"剧本资产"）
     if (episodeId && (newCharacters.length > 0 || newScenes.length > 0 || createdCharacters.length > 0 || createdScenes.length > 0)) {
       const characterEntityIds = createdCharacters.map((c) => c.id);
@@ -855,8 +909,6 @@ ${script.content}
         characterEntityIds: allCharacterIds,
         sceneEntityIds: allSceneIds
       });
-
-      console.log(`[extractAndCreateEntitiesFromScript] Linked entities to episode ${episodeId}: ${allCharacterIds.length} characters, ${allSceneIds.length} scenes`);
     }
 
     return {
@@ -892,14 +944,12 @@ ${script.content}
     if (options.autoExtractEntities !== false) {
       const hasEntities = entityContext.characters.length > 0 || entityContext.scenes.length > 0;
       if (!hasEntities) {
-        console.log('[planStoryboards] No entities found, auto-extracting from script...');
         const extracted = await this.extractAndCreateEntitiesFromScript(projectId, scriptId, {
           modelId: options.modelId,
           customModel: options.customModel,
           episodeId: script.episodeId ?? undefined
         });
         if (extracted) {
-          console.log(`[planStoryboards] Extracted ${extracted.characters.length} characters (${extracted.newCharacters.length} new) and ${extracted.scenes.length} scenes (${extracted.newScenes.length} new)`);
           // 重新获取实体上下文
           entityContext = this.resolveScriptEntityContext(projectId, script);
         }
@@ -1007,10 +1057,6 @@ ${script.content}
         imageInputs: hasReference ? referenceImageUrls : undefined,
       });
 
-      if (hasReference) {
-        console.log(`[DEBUG] renderStoryboardImages using IMG2IMG with ${referenceImageUrls.length} reference images for shot: ${compiled.plan.shotTitle}`);
-      }
-
       const next = this.store.updateStoryboard(projectId, storyboard.id, {
         title: compiled.plan.shotTitle,
         prompt: compiled.prompt,
@@ -1054,8 +1100,6 @@ ${script.content}
         dramaStyle = drama?.style ?? '';
       }
     }
-    console.log(`[DEBUG] Drama style for assets: "${dramaStyle}", scope: ${options.scope ?? 'all'}`);
-
     const imageModel = this.deps.resolveModelName('image', options.modelId, options.customModel);
     const imageModelConfig = this.deps.pickModelConfig('image', imageModel);
     this.deps.validateImageGenerationParams(imageModelConfig, 'asset', {
@@ -1078,7 +1122,6 @@ ${script.content}
     const filteredSeeds = options.scope
       ? seeds.filter((s) => s.scope === options.scope)
       : seeds;
-    console.log(`[DEBUG] generateAssets for storyboard ${storyboardId}: total seeds = ${seeds.length}, filtered = ${filteredSeeds.length}, scope = ${options.scope ?? 'all'}`, filteredSeeds.map(s => ({ role: s.role, name: s.name, scope: s.scope })));
     const baseAssetMap = new Map<string, Asset>();
 
     // Pre-populate baseAssetMap with existing base assets from the database
@@ -1093,8 +1136,6 @@ ${script.content}
         baseAssetMap.set(key, asset);
       }
     }
-    console.log(`[DEBUG] Pre-populated baseAssetMap with ${baseAssetMap.size} existing base assets`);
-
     // Generate base-level assets (always use T2I)
     for (const seed of filteredSeeds.filter((item) => item.scope === 'base')) {
       const existing = projectAssets.find(
@@ -1105,14 +1146,12 @@ ${script.content}
       );
       if (existing) {
         baseAssetMap.set(this.assetSeedKey(seed), existing);
-        ensuredAssets.push(existing); // Add existing asset to ensuredAssets
+        ensuredAssets.push(existing);
         continue;
       }
       let imageUrl = seed.imageUrl;
       const prompt = this.buildAssetPrompt(seed, undefined, dramaStyle);
-      console.log(`[DEBUG] Generating image for asset: ${seed.name}, hasExistingImage: ${!!imageUrl}, prompt: ${prompt.substring(0, 50)}...`);
       if (!imageUrl) {
-        console.log(`[DEBUG] Calling generateImageWithRetry for: ${seed.name}`);
         try {
           const image = await this.generateImageWithRetry({
             prompt,
@@ -1125,17 +1164,13 @@ ${script.content}
             aspectRatio: options.aspectRatio,
             providerOptions: options.providerOptions,
           });
-          console.log(`[DEBUG] Image generated successfully: ${image.url}`);
           imageUrl = image.url;
           if (seed.entityId) {
             this.store.updateDomainEntity(projectId, seed.entityId, { imageUrl });
           }
         } catch (err) {
-          console.error(`[DEBUG] Image generation failed for ${seed.name}:`, err instanceof Error ? err.message : String(err));
           // Continue without failing - create asset with null image
         }
-      } else {
-        console.log(`[DEBUG] Using existing imageUrl: ${imageUrl}`);
       }
       const created = this.store.createAsset({
         id: uuid(),
@@ -1158,8 +1193,7 @@ ${script.content}
       if (created) {
         baseAssetMap.set(this.assetSeedKey(seed), created);
         projectAssets.push(created);
-        ensuredAssets.push(created); // Also add to ensuredAssets so they're returned to frontend
-        console.log(`[DEBUG] Created base asset: ${created.name} (type: ${created.type}, scope: ${created.scope})`);
+        ensuredAssets.push(created);
       }
     }
 
@@ -1231,8 +1265,6 @@ ${script.content}
           const img2imgMode = hasReference ? 'img2img' : 't2i';
           const selectedImageModelName = this.deps.resolveImageModelByMode(img2imgMode, options.modelId, options.customModel);
           const selectedImageModelConfig = selectedImageModelName ? this.deps.pickModelConfig('image', selectedImageModelName) : null;
-          console.log(`[DEBUG] Generating shot asset: ${seed.name}, hasReference=${hasReference}, mode=${img2imgMode}, model=${selectedImageModelName}, baseAssetName=${baseAsset?.name ?? 'none'}`);
-
           const imageInputs = baseAsset?.imageUrl ? [baseAsset.imageUrl] : undefined;
           const image = await this.generateImageWithRetry({
             prompt,
@@ -1278,7 +1310,9 @@ ${script.content}
       storyboardId,
       ensuredAssets.filter((item) => item.scope === 'shot' || item.storyboardId === storyboardId)
     );
-    return ensuredAssets;
+    const preferredScope = options.scope ?? 'shot';
+    const scopedAssets = ensuredAssets.filter((item) => item.scope === preferredScope);
+    return scopedAssets.length > 0 ? scopedAssets : ensuredAssets;
   }
 
   async generateShotImage(
@@ -1350,10 +1384,6 @@ ${script.content}
       providerOptions: options.providerOptions,
       imageInputs: hasReference ? referenceImageUrls : undefined,
     });
-
-    if (hasReference) {
-      console.log(`[DEBUG] generateShotImage using IMG2IMG with ${referenceImageUrls.length} reference images`);
-    }
 
     return this.store.updateStoryboard(projectId, storyboardId, {
       title: compiled.plan.shotTitle,
@@ -1629,7 +1659,6 @@ ${script.content}
     }
 
     const finalAssets = this.store.listAssets(projectId) ?? [];
-    console.log(`[DEBUG] generateEpisodeAssetsBatch returning ${finalAssets.length} assets`);
     return {
       assets: finalAssets,
       createdStoryboardIds,
@@ -2087,9 +2116,7 @@ ${script.content}
       .filter((item): item is DomainEntity => Boolean(item));
 
     const seeds: StoryboardAssetSeed[] = [];
-    console.log(`[DEBUG] buildStoryboardAssetSeeds: sceneEntity.imageUrl = ${sceneEntity?.imageUrl}, characterEntities count = ${characterEntities.length}`);
     if (sceneEntity) {
-      console.log(`[DEBUG] scene entity: name=${sceneEntity.name}, imageUrl=${sceneEntity.imageUrl}`);
       seeds.push({
         role: 'scene',
         scope: 'base',
@@ -2132,6 +2159,33 @@ ${script.content}
           baseAssetName: null,
           voiceProfile: voiceProfile,
           imageUrl: entity.imageUrl
+        });
+      }
+    } else {
+      const fallbackCharacterToken = deriveCharacterSeedToken(compiled.plan);
+      if (fallbackCharacterToken) {
+        const fallbackCharacterBaseName = deriveCharacterBaseLabel(storyboard, compiled.plan);
+        const voiceProfile =
+          relatedAssets.find(
+            (item) =>
+              item.type === 'character' &&
+              item.scope === 'base' &&
+              item.name.trim().toLowerCase() === fallbackCharacterBaseName.trim().toLowerCase()
+          )?.voiceProfile ?? null;
+        seeds.push({
+          role: 'character',
+          scope: 'base',
+          shareScope: 'project',
+          bindToStoryboard: false,
+          reuseAcrossProject: true,
+          entityId: null,
+          name: fallbackCharacterBaseName,
+          prompt: buildCharacterBasePrompt(storyboard, compiled.plan),
+          statePrompt: null,
+          state: null,
+          baseAssetName: null,
+          voiceProfile,
+          imageUrl: null
         });
       }
     }
@@ -2195,6 +2249,34 @@ ${script.content}
           ),
           state: buildCharacterShotState(compiled.plan),
           baseAssetName: `${entity.name}-角色主资产`,
+          voiceProfile: null,
+          imageUrl: null
+        });
+      }
+    } else {
+      const fallbackCharacterToken = deriveCharacterSeedToken(compiled.plan);
+      if (fallbackCharacterToken) {
+        const fallbackCharacterBaseName = deriveCharacterBaseLabel(storyboard, compiled.plan);
+        seeds.push({
+          role: 'character',
+          scope: 'shot',
+          shareScope: 'project',
+          bindToStoryboard: true,
+          reuseAcrossProject: false,
+          entityId: null,
+          name: `${storyboard.title}-${fallbackCharacterToken}-角色镜头状态`,
+          prompt: compiled.prompt,
+          statePrompt: collapseWhitespace(
+            [
+              `镜头级角色状态：${fallbackCharacterToken}`,
+              `镜头：${compiled.plan.shotTitle}`,
+              `动作：${compiled.plan.action}`,
+              `情绪：${inferEmotionFromAction(compiled.plan.action)}`,
+              '沿用角色主资产的面部、发型和固定服装方案'
+            ].join('；')
+          ),
+          state: buildCharacterShotState(compiled.plan),
+          baseAssetName: fallbackCharacterBaseName,
           voiceProfile: null,
           imageUrl: null
         });

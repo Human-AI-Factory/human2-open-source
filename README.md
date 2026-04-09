@@ -112,10 +112,16 @@ human2-open-source/
 │   │   ├── core/          # 核心类型
 │   │   ├── db/            # SQLite 数据层
 │   │   ├── modules/       # 功能模块
-│   │   │   ├── auth/      # 认证
-│   │   │   ├── domain/    # 项目/剧集/集管理
-│   │   │   ├── pipeline/  # AI 任务流水线
-│   │   │   └── settings/  # 系统设置
+│   │   │   ├── auth/          # 认证
+│   │   │   ├── projects/      # 项目与基础任务
+│   │   │   ├── studio/        # 小说/大纲/剧本生成
+│   │   │   ├── domain/        # Drama/Episode/域对象工作流
+│   │   │   ├── pipeline/      # 分镜/资产/视频/音频/交付流水线
+│   │   │   ├── tasks/         # 全局任务中心、告警、配额、SLO
+│   │   │   ├── runtime/       # 队列运行时、统一告警、修复
+│   │   │   ├── settings/      # 模型连接、Prompt、运维设置
+│   │   │   ├── library/       # 资源库与去重/冲突处理
+│   │   │   └── orchestration/ # 全链路编排入口
 │   │   └── app.ts         # 入口文件
 │   └── test/              # 单元测试
 ├── frontend/          # Vue 3 单页应用
@@ -123,23 +129,72 @@ human2-open-source/
 │   │   ├── api/           # API 客户端
 │   │   ├── components/    # 可复用组件
 │   │   ├── features/      # 功能模块
-│   │   │   ├── auth/      # 登录
-│   │   │   ├── domain/    # 项目管理
-│   │   │   ├── asset-workbench/  # 资产生成
-│   │   │   ├── timeline-editor/   # 视频编辑
-│   │   │   └── settings/  # 配置
+│   │   │   ├── drama-hub/             # Drama 首页
+│   │   │   ├── project-detail/        # 小说/大纲/剧本/分集驾驶舱
+│   │   │   ├── storyboard-workbench/  # 分镜工作台
+│   │   │   ├── asset-workbench/       # 资产工作台
+│   │   │   ├── workflow-workbench/    # 批处理工作台
+│   │   │   ├── timeline-editor/       # 时间线编辑器
+│   │   │   ├── task-center/           # 任务中心与运维面板
+│   │   │   └── settings/              # 设置中心
 │   │   └── composables/   # Vue 组合式 API
 │   └── test/              # 单元测试
+├── desktop/           # Electron 桌面壳、本地媒体桥接、离线队列
+├── data/              # 默认数据目录
 ├── docker-compose.yml # Docker 部署
 └── Dockerfile         # 容器构建
 ```
+
+## 后端 API 全图
+
+- `POST /api/auth/login`
+  登录并签发 JWT。
+- `GET|POST|PATCH|DELETE /api/projects/*`
+  项目列表、详情、项目级任务和 workflow 摘要。
+- `GET|PUT|POST /api/studio/*`
+  小说保存、小说生成、大纲生成、剧本生成。
+- `GET|PUT|POST|PATCH|DELETE /api/domain/*`
+  Drama、Episode、Episode workflow、Domain Entity、应用策略、生命周期、审计。
+- `GET|POST|PATCH|DELETE /api/pipeline/*`
+  分镜规划/生成/重写、资产生成/修改、视频任务、音频任务、时间线、交付包、上传接口。
+- `GET|POST /api/orchestration/*`
+  一键触发完整生产链。
+- `GET|POST|PATCH /api/tasks/*`
+  全局视频任务、事件导出、批量重试/取消/自动修复、运行时健康、统一告警、SLO、配额和失败注入。
+- `GET|POST|PATCH|DELETE /api/settings/*`
+  模型连接、Provider 能力目录、Prompt 模板、运行时策略、运维审计、迁移/备份。
+- `GET|POST|PATCH|DELETE /api/library/*`
+  资源库导入、建资产、冲突检测、去重与撤销。
+- `GET /api/dashboard/summary`
+  首页摘要。
+- `GET /api/health`
+  健康检查与请求指标。
+
+## 前端页面与 Composable 关系
+
+- `DramaHub`
+  入口页，负责 Drama 列表、新建项目、跳转到分集/任务/生产台。
+- `ProjectDetail`
+  承担小说、大纲、剧本和分集驾驶舱，是从创作进入生产的总控页。
+- `Episode/Storyboard/Asset/Workflow Workbench`
+  围绕单集或批处理推进 storyboard、asset、frame prompt、review 与 delivery。
+- `TimelineEditor`
+  依赖 `useTimeline*` 系列 composable，覆盖剪辑轨、辅助轨、关键帧、布局模板、桌面桥接和本地草稿。
+- `TaskCenter`
+  依赖 `useTaskCenter*` 系列 composable，聚合任务查询、运行时健康、统一告警、SLO、配额和失败注入。
+- `Settings`
+  依赖 `useSettings*` 系列 composable，管理模型连接、Provider 规则、日志和运维动作。
+- `AppShell`
+  所有工作台共享的顶层壳，桌面模式下接入 `useDesktopRuntime` 与 `useDesktopLocalMedia`。
 
 ## Docker 部署
 
 ```bash
 # 构建并运行
-docker-compose up --build
+docker compose up --build
 ```
+
+容器内运行目录为 `/app/backend`，因此默认的 `DATA_FILE=data/app.db` 和 `STATIC_DIR=../frontend/dist` 可以直接复用开发环境配置。
 
 ## 开发
 

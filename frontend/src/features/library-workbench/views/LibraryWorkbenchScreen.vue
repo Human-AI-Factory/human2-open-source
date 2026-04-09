@@ -620,7 +620,7 @@ watch(
 }
 
 .route-focus {
-  border-color: #2f6fec;
-  box-shadow: 0 0 0 2px rgba(47, 111, 236, 0.2);
+  border-color: var(--brand);
+  box-shadow: var(--selection-ring);
 }
 </style>

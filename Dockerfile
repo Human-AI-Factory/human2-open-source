@@ -1,28 +1,34 @@
-FROM node:24-alpine AS build
-WORKDIR /app
+FROM node:24-alpine AS frontend-build
+WORKDIR /app/frontend
 
-COPY package.json yarn.lock ./
-COPY backend/package.json backend/package.json
-COPY frontend/package.json frontend/package.json
+COPY frontend/package.json frontend/yarn.lock ./
 RUN yarn install --frozen-lockfile
 
-COPY . .
+COPY frontend/ ./
+RUN yarn build
+
+FROM node:24-alpine AS backend-build
+WORKDIR /app/backend
+
+COPY backend/package.json backend/yarn.lock ./
+RUN yarn install --frozen-lockfile
+
+COPY backend/ ./
 RUN yarn build
 
 FROM node:24-alpine AS runtime
-WORKDIR /app
+WORKDIR /app/backend
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=60000
 
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/backend/dist ./backend/dist
-COPY --from=build /app/frontend/dist ./frontend/dist
-COPY --from=build /app/backend/package.json ./backend/package.json
-COPY --from=build /app/package.json ./package.json
+COPY --from=backend-build /app/backend/node_modules ./node_modules
+COPY --from=backend-build /app/backend/dist ./dist
+COPY --from=backend-build /app/backend/package.json ./package.json
+COPY --from=frontend-build /app/frontend/dist /app/frontend/dist
 
 RUN mkdir -p /app/backend/data
 VOLUME ["/app/backend/data"]
 
 EXPOSE 60000
-CMD ["node", "backend/dist/app.js"]
+CMD ["node", "dist/app.js"]

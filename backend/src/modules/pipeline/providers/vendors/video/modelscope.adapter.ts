@@ -119,7 +119,7 @@ export const modelscopeVideoAdapter: VendorVideoAdapter = createVideoPollingReci
     }
     return readPollingUrlResult(data, {
       statusPaths: ['task_status', 'taskStatus', 'status', 'data.task_status', 'data.taskStatus', 'data.status'],
-      successStatuses: ['succeeded', 'success', 'completed', 'done'],
+      successStatuses: ['succeed', 'succeeded', 'success', 'completed', 'done'],
       failureStatuses: ['failed', 'error', 'cancelled'],
       errorPaths: ['errors.message', 'message', 'data.errors.message', 'data.message'],
       successWithoutUrlError: 'ModelScope video task succeeded without video url',

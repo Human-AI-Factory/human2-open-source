@@ -5,7 +5,7 @@
         <section class="panel drama-hub-hero">
           <div class="inline-between">
             <div>
-              <p class="muted">Drama-first Hub</p>
+              <p class="eyebrow">Drama-first Hub</p>
               <h2>剧集生产入口</h2>
               <p class="muted">以 Drama / Episode 组织项目，按角色进入分镜、资产、流程与交付。</p>
             </div>
@@ -19,7 +19,7 @@
         </section>
 
         <section class="panel compact-panel">
-          <h2>新建 Drama 项目</h2>
+          <h3>新建 Drama 项目</h3>
           <form class="form" @submit.prevent="createNewDramaProject">
             <input v-model="name" placeholder="项目名称" />
             <input v-model="dramaName" placeholder="Drama 名称（可选，不填则同项目名）" />
@@ -31,7 +31,10 @@
 
       <section class="panel">
         <div class="inline-between">
-          <h2>Drama 列表</h2>
+          <div>
+            <h2>Drama 列表</h2>
+            <p class="muted">统一查看剧集规模、当前阶段和快速入口。</p>
+          </div>
           <button class="primary" @click="loadAll">刷新</button>
         </div>
         <div class="actions">
@@ -39,22 +42,43 @@
           <button class="primary" @click="loadAll">搜索</button>
         </div>
         <p v-if="entries.length === 0" class="muted">暂无 Drama 项目</p>
-        <div class="list">
-          <article class="card" v-for="entry in filteredEntries" :key="entry.project.id">
-            <div>
-              <h3>{{ entry.dramaName }}</h3>
-              <p class="muted">{{ entry.dramaDescription || entry.project.description || '无描述' }}</p>
-              <p class="muted">
-                Episodes {{ entry.episodeCount }}
-                · published {{ entry.publishedCount }}
-                · workflow pending {{ entry.pendingCount }}
-              </p>
+        <div class="list" v-else>
+          <article class="card drama-entry-card" v-for="entry in filteredEntries" :key="entry.project.id">
+            <div class="drama-entry-main">
+              <div class="inline-between drama-entry-head">
+                <div>
+                  <h3>{{ entry.dramaName }}</h3>
+                  <p class="muted">{{ entry.dramaDescription || entry.project.description || '无描述' }}</p>
+                </div>
+                <span class="stage-chip">{{ stageLabel(entry.workflow?.stage.current) }}</span>
+              </div>
+
+              <div class="summary-grid drama-entry-summary">
+                <article class="summary-card">
+                  <p class="summary-label">Episodes</p>
+                  <p class="summary-value">{{ entry.episodeCount }}</p>
+                </article>
+                <article class="summary-card">
+                  <p class="summary-label">Published</p>
+                  <p class="summary-value">{{ entry.publishedCount }}</p>
+                </article>
+                <article class="summary-card">
+                  <p class="summary-label">Pending</p>
+                  <p class="summary-value">{{ entry.pendingCount }}</p>
+                </article>
+                <article class="summary-card">
+                  <p class="summary-label">Progress</p>
+                  <p class="summary-value">{{ entry.workflow?.stage.progressPercent ?? 0 }}%</p>
+                </article>
+              </div>
+
               <p class="muted">
                 阶段 {{ stageLabel(entry.workflow?.stage.current) }}
-                · 进度 {{ entry.workflow?.stage.progressPercent ?? 0 }}%
+                · 下一步 {{ entry.workflow?.stage.nextAction || '-' }}
               </p>
             </div>
-            <div class="actions">
+
+            <div class="actions drama-entry-actions">
               <button class="primary" @click="goEpisodeStudio(entry.dramaId)">剧集工作台</button>
               <button @click="goDramaTaskCenter(entry.dramaId)">该 Drama 任务</button>
               <button @click="goProduction(entry.project.id, entry.dramaId)">生产总台</button>
@@ -68,22 +92,24 @@
         <section class="panel compact-panel">
           <h3>全局概览</h3>
           <div class="stats-grid">
-            <article class="card" v-for="item in statItems" :key="item.label">
-              <p class="muted">{{ item.label }}</p>
-              <h2>{{ item.value }}</h2>
+            <article class="summary-card" v-for="item in statItems" :key="item.label">
+              <p class="summary-label">{{ item.label }}</p>
+              <p class="summary-value">{{ item.value }}</p>
             </article>
           </div>
         </section>
 
         <section class="panel compact-panel">
           <h3>当前筛选</h3>
-          <div class="card">
-            <p class="muted">关键词</p>
-            <strong>{{ keyword || '全部 Drama' }}</strong>
-          </div>
-          <div class="card">
-            <p class="muted">命中结果</p>
-            <strong>{{ filteredEntries.length }} / {{ entries.length }}</strong>
+          <div class="list">
+            <div class="summary-card">
+              <p class="summary-label">关键词</p>
+              <p class="summary-value">{{ keyword || '全部 Drama' }}</p>
+            </div>
+            <div class="summary-card">
+              <p class="summary-label">命中结果</p>
+              <p class="summary-value">{{ filteredEntries.length }} / {{ entries.length }}</p>
+            </div>
           </div>
         </section>
       </template>
@@ -315,16 +341,62 @@ onMounted(() => {
 
 <style scoped>
 .drama-hub-shell {
-  --rail-width: 320px;
-  --inspector-width: 300px;
+  --rail-width: 340px;
+  --inspector-width: 320px;
 }
 
 .drama-hub-hero {
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  background: var(--surface-spotlight);
 }
 
-.stats-grid {
+.drama-entry-card {
+  align-items: flex-start;
+}
+
+.drama-entry-main {
   display: grid;
   gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.drama-entry-head {
+  align-items: flex-start;
+}
+
+.drama-entry-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+}
+
+.drama-entry-actions {
+  align-self: center;
+  justify-content: flex-end;
+  min-width: 260px;
+}
+
+.stage-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--status-info-border);
+  background: var(--status-info-bg);
+  color: var(--status-info-ink);
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  .drama-entry-actions {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .drama-entry-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 </style>

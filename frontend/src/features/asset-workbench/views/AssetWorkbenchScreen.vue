@@ -697,19 +697,18 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 剧本资产区域样式 */
 .domain-entities-section {
   margin: 16px 0;
   padding: 16px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
+  background: var(--surface-panel-soft);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
 }
 
 .domain-entities-section h3 {
   margin: 0 0 12px 0;
   font-size: 16px;
-  color: #333;
+  color: var(--ink-1);
 }
 
 .domain-entities-grid {
@@ -726,7 +725,7 @@ onMounted(() => {
 .domain-entity-group h4 {
   margin: 0 0 8px 0;
   font-size: 14px;
-  color: #666;
+  color: var(--ink-2);
 }
 
 .domain-entity-list {
@@ -739,9 +738,9 @@ onMounted(() => {
   display: flex;
   gap: 8px;
   padding: 8px;
-  background: white;
-  border-radius: 6px;
-  border: 1px solid #dee2e6;
+  background: var(--surface-canvas);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
   align-items: center;
 }
 
@@ -759,7 +758,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  background: #e9ecef;
+  background: var(--status-neutral-bg);
   border-radius: 4px;
 }
 
@@ -785,9 +784,9 @@ onMounted(() => {
   margin: 16px 0;
   padding: 24px;
   text-align: center;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px dashed #dee2e6;
+  background: var(--surface-panel-soft);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--line-strong);
 }
 
 .empty-domain-entities p {
@@ -809,10 +808,10 @@ onMounted(() => {
   max-width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  border: 1px solid #d6deef;
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   margin-top: 8px;
-  background: #f5f8ff;
+  background: var(--card-soft);
 }
 
 .asset-card {
@@ -820,8 +819,8 @@ onMounted(() => {
 }
 
 .asset-card--active {
-  border-color: #2f6fec;
-  box-shadow: 0 0 0 2px rgba(47, 111, 236, 0.2);
+  border-color: var(--brand);
+  box-shadow: var(--selection-ring-strong);
 }
 
 .inspector-asset-thumb {
@@ -830,8 +829,8 @@ onMounted(() => {
 }
 
 .route-focus {
-  border-color: #2f6fec;
-  box-shadow: 0 0 0 2px rgba(47, 111, 236, 0.2);
+  border-color: var(--brand);
+  box-shadow: var(--selection-ring-strong);
 }
 
 .voice-profile {
@@ -847,34 +846,35 @@ onMounted(() => {
 
 .voice-binding-row select {
   padding: 4px 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  background: white;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-input);
   font-size: 13px;
   min-width: 120px;
 }
 
 .voice-binding-row input {
   padding: 4px 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-input);
   font-size: 13px;
   min-width: 120px;
 }
 
 .voice-cloning-note {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--ink-2);
   margin-top: 4px;
 }
 
 button.danger {
-  background-color: #fee2e2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
+  background-color: var(--status-danger-bg);
+  color: var(--status-danger-ink);
+  border: 1px solid var(--status-danger-border);
 }
 
 button.danger:hover:not(:disabled) {
-  background-color: #fecaca;
+  background-color: var(--status-danger-bg-strong);
 }
 </style>

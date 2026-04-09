@@ -210,7 +210,7 @@ onMounted(() => {
 }
 
 .review-hero-panel {
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  background: var(--surface-spotlight);
 }
 
 .summary-grid {

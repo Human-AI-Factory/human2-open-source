@@ -263,7 +263,7 @@ const skipEventPresetApplyConfirmInSessionModel = computed({
 .modal-mask {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 40, 0.55);
+  background: var(--surface-backdrop-mid);
   display: grid;
   place-items: center;
   z-index: 30;
@@ -273,10 +273,10 @@ const skipEventPresetApplyConfirmInSessionModel = computed({
   width: min(760px, calc(100vw - 24px));
   max-height: calc(100vh - 24px);
   overflow: auto;
-  border-radius: 14px;
-  background: #fff;
-  border: 1px solid #d1daea;
-  box-shadow: 0 20px 50px rgba(15, 23, 40, 0.35);
+  border-radius: var(--radius-lg);
+  background: var(--surface-canvas);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-float-strong);
   padding: 14px;
 }
 
@@ -287,35 +287,19 @@ const skipEventPresetApplyConfirmInSessionModel = computed({
 }
 
 .timeline-item {
-  border: 1px solid #dbe3f1;
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   padding: 10px;
-  background: #f8fbff;
+  background: var(--card-soft);
 }
 
 .diff-badge {
   margin-left: 6px;
   font-size: 11px;
-  color: #b45309;
-  background: #fffbeb;
-  border: 1px solid #fcd34d;
-  border-radius: 999px;
+  color: var(--status-warning-ink);
+  background: var(--status-warning-bg);
+  border: 1px solid var(--status-warning-border);
+  border-radius: var(--radius-pill);
   padding: 0 6px;
-}
-
-.chip-row {
-  margin-top: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chip {
-  border: 1px solid #d0d7de;
-  border-radius: 999px;
-  padding: 2px 10px;
-  background: #f8fafc;
-  color: #334155;
-  font-size: 12px;
 }
 </style>

@@ -184,8 +184,8 @@ const highlightText = (raw: string): string => {
 
 <style scoped>
 .table-wrap {
-  border: 1px solid #dbe3f1;
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   overflow: auto;
 }
 
@@ -198,21 +198,21 @@ const highlightText = (raw: string): string => {
 .task-table th,
 .task-table td {
   padding: 8px 10px;
-  border-bottom: 1px solid #edf2f7;
+  border-bottom: 1px solid var(--line);
   vertical-align: top;
   text-align: left;
 }
 
 .task-table thead th {
-  background: #f8fbff;
+  background: var(--card-soft);
   font-size: 12px;
-  color: #334155;
+  color: var(--ink-1);
   position: sticky;
   top: 0;
 }
 
 .task-table th.sorted {
-  background: #eef6ff;
+  background: var(--status-info-bg);
 }
 
 .th-sort {
@@ -262,48 +262,42 @@ const highlightText = (raw: string): string => {
 
 .table-tools label {
   font-size: 12px;
-  color: #334155;
+  color: var(--ink-1);
   display: inline-flex;
   align-items: center;
   gap: 4px;
 }
 
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  border: 1px solid #dbe3f1;
-  background: #f8fafc;
-}
-
 .status-queued {
-  color: #1d4ed8;
-  background: #eff6ff;
+  color: var(--status-info-ink);
+  background: var(--status-info-bg);
+  border-color: var(--status-info-border);
 }
 
 .status-submitting,
 .status-polling,
 .status-running {
-  color: #92400e;
-  background: #fffbeb;
+  color: var(--status-warning-ink);
+  background: var(--status-warning-bg);
+  border-color: var(--status-warning-border);
 }
 
 .status-done {
-  color: #166534;
-  background: #f0fdf4;
+  color: var(--status-success-ink);
+  background: var(--status-success-bg);
+  border-color: var(--status-success-border);
 }
 
 .status-failed,
 .status-cancelled {
-  color: #991b1b;
-  background: #fef2f2;
+  color: var(--status-danger-ink);
+  background: var(--status-danger-bg);
+  border-color: var(--status-danger-border);
 }
 
 :deep(mark.hl) {
-  background: #fff3b0;
-  color: #92400e;
+  background: var(--highlight-bg);
+  color: var(--status-warning-ink);
   border-radius: 3px;
   padding: 0 2px;
 }

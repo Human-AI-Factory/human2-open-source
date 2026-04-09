@@ -98,7 +98,7 @@ export const buildApp = (dataFile: string, staticDir: string) => {
   app.use(morgan(':method :url :status :res[content-length] - :response-time ms requestId=:res[x-request-id]'));
 
   app.get('/api/health', (_req, res) => {
-    res.json({ ok: true, service: 'human2-backend' });
+    res.json({ ok: true, service: 'human2-next-lite-backend' });
   });
 
   app.get('/api/health/metrics', (_req, res) => {

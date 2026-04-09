@@ -9,6 +9,20 @@ declare global {
         appVersion: string;
         localResourceDir: string;
         defaultResourceDir: string;
+        apiBaseUrl?: string;
+        backend?: {
+          status: 'idle' | 'starting' | 'running' | 'stopped' | 'failed';
+          host: string;
+          port: number | null;
+          rendererUrl: string;
+          apiBaseUrl: string;
+          pid: number | null;
+          startedAt: string | null;
+          stoppedAt: string | null;
+          dataFile: string;
+          lastError: string;
+          logs?: string[];
+        } | null;
         queueSummary?: {
           total: number;
           paused?: boolean;

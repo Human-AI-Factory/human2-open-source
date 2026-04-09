@@ -26,19 +26,19 @@ defineProps<{
 .connection-result {
   margin-top: 8px;
   padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #d0d7de;
-  background: #f8fafc;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--status-neutral-border);
+  background: var(--status-neutral-bg);
 }
 
 .connection-result.success {
-  border-color: #86efac;
-  background: #f0fdf4;
+  border-color: var(--status-success-border);
+  background: var(--status-success-bg);
 }
 
 .connection-result.failure {
-  border-color: #f5c2c7;
-  background: #fff7f7;
+  border-color: var(--status-danger-border);
+  background: var(--status-danger-bg);
 }
 
 .headline {
@@ -57,11 +57,11 @@ defineProps<{
 }
 
 .meta {
-  color: #64748b;
+  color: var(--ink-2);
 }
 
 .preview {
   margin-top: 6px;
-  color: #0f172a;
+  color: var(--ink-1);
 }
 </style>

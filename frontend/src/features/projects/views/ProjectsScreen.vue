@@ -5,7 +5,7 @@
         <section class="panel project-hero">
           <div class="inline-between">
             <div>
-              <p class="muted">Toonflow Studio</p>
+              <p class="eyebrow">Human2 Project Desk</p>
               <h2>把创意变成可执行的视频流水线</h2>
               <p class="muted">从项目管理到分镜资产再到视频任务，在一个工作台里完成。</p>
             </div>
@@ -18,7 +18,7 @@
         </section>
 
         <section class="panel compact-panel">
-          <h2>新建项目</h2>
+          <h3>新建项目</h3>
           <form class="form" @submit.prevent="createNewProject">
             <input v-model="name" placeholder="项目名称" />
             <textarea v-model="description" placeholder="项目描述（可选）" rows="3" />
@@ -30,7 +30,10 @@
 
       <section class="panel">
         <div class="inline-between">
-          <h2>项目列表</h2>
+          <div>
+            <h2>项目列表</h2>
+            <p class="muted">按阶段、进度和关键产物查看当前流水线状态。</p>
+          </div>
           <button class="primary" @click="loadAll">刷新</button>
         </div>
         <div class="actions">
@@ -47,12 +50,38 @@
           <button class="primary" @click="searchProjects">搜索</button>
         </div>
         <p v-if="projects.length === 0" class="muted">暂无项目</p>
-        <div class="list">
-          <article class="card" v-for="project in projects" :key="project.id">
-            <div>
-              <h3>{{ project.name }}</h3>
-              <p class="muted">{{ project.description || '无描述' }}</p>
-              <p class="muted">任务数：{{ project.tasks.length }}</p>
+        <div class="list" v-else>
+          <article class="card project-entry-card" v-for="project in projects" :key="project.id">
+            <div class="project-entry-main">
+              <div class="inline-between project-entry-head">
+                <div>
+                  <h3>{{ project.name }}</h3>
+                  <p class="muted">{{ project.description || '无描述' }}</p>
+                </div>
+                <span class="stage-chip" v-if="projectWorkflowMap[project.id]">
+                  {{ workflowStageLabel(projectWorkflowMap[project.id].stage.current) }}
+                </span>
+              </div>
+
+              <div class="summary-grid project-summary">
+                <article class="summary-card">
+                  <p class="summary-label">任务数</p>
+                  <p class="summary-value">{{ project.tasks.length }}</p>
+                </article>
+                <article class="summary-card">
+                  <p class="summary-label">进度</p>
+                  <p class="summary-value">{{ projectWorkflowMap[project.id]?.stage.progressPercent ?? 0 }}%</p>
+                </article>
+                <article class="summary-card">
+                  <p class="summary-label">分镜</p>
+                  <p class="summary-value">{{ projectWorkflowMap[project.id]?.counts.storyboard ?? 0 }}</p>
+                </article>
+                <article class="summary-card">
+                  <p class="summary-label">视频完成</p>
+                  <p class="summary-value">{{ projectWorkflowMap[project.id]?.counts.videoTaskDone ?? 0 }}</p>
+                </article>
+              </div>
+
               <div class="workflow-meta" v-if="projectWorkflowMap[project.id]">
                 <p class="muted">
                   阶段：{{ workflowStageLabel(projectWorkflowMap[project.id].stage.current) }}
@@ -61,16 +90,11 @@
                 <div class="workflow-track">
                   <div class="workflow-fill" :style="{ width: `${projectWorkflowMap[project.id].stage.progressPercent}%` }"></div>
                 </div>
-                <p class="muted">
-                  进度 {{ projectWorkflowMap[project.id].stage.progressPercent }}%
-                  · 分镜 {{ projectWorkflowMap[project.id].counts.storyboard }}
-                  · 资产 {{ projectWorkflowMap[project.id].counts.asset }}
-                  · 视频完成 {{ projectWorkflowMap[project.id].counts.videoTaskDone }}
-                </p>
               </div>
               <p v-else class="muted">工作流摘要加载中...</p>
             </div>
-            <div class="actions">
+
+            <div class="actions project-entry-actions">
               <button class="primary" @click="goDetail(project.id)">查看</button>
               <button @click="continueWorkflow(project.id)">继续流程</button>
               <button @click="goProjectTaskCenter(project.id)">项目任务</button>
@@ -89,26 +113,28 @@
         <section class="panel compact-panel">
           <h3>全局概览</h3>
           <div class="stats-grid">
-            <article class="card" v-for="item in statItems" :key="item.label">
-              <p class="muted">{{ item.label }}</p>
-              <h2>{{ item.value }}</h2>
+            <article class="summary-card" v-for="item in statItems" :key="item.label">
+              <p class="summary-label">{{ item.label }}</p>
+              <p class="summary-value">{{ item.value }}</p>
             </article>
           </div>
         </section>
 
         <section class="panel compact-panel">
           <h3>当前排序</h3>
-          <div class="card">
-            <p class="muted">字段</p>
-            <strong>{{ sortBy }}</strong>
-          </div>
-          <div class="card">
-            <p class="muted">顺序</p>
-            <strong>{{ order }}</strong>
-          </div>
-          <div class="card">
-            <p class="muted">命中结果</p>
-            <strong>{{ projects.length }} / {{ total }}</strong>
+          <div class="list">
+            <div class="summary-card">
+              <p class="summary-label">字段</p>
+              <p class="summary-value">{{ sortBy }}</p>
+            </div>
+            <div class="summary-card">
+              <p class="summary-label">顺序</p>
+              <p class="summary-value">{{ order }}</p>
+            </div>
+            <div class="summary-card">
+              <p class="summary-label">命中结果</p>
+              <p class="summary-value">{{ projects.length }} / {{ total }}</p>
+            </div>
           </div>
         </section>
       </template>
@@ -393,38 +419,79 @@ onMounted(async () => {
 
 <style scoped>
 .projects-shell {
-  --rail-width: 320px;
-  --inspector-width: 300px;
-}
-
-.stats-grid {
-  display: grid;
-  gap: 12px;
+  --rail-width: 340px;
+  --inspector-width: 320px;
 }
 
 .project-hero {
-  background: linear-gradient(120deg, #0f1f3d, #0e5bd8);
-  color: #fff;
+  background: var(--surface-spotlight);
 }
 
-.project-hero .muted {
-  color: #d9e7ff;
+.project-entry-card {
+  align-items: flex-start;
+}
+
+.project-entry-main {
+  display: grid;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.project-entry-head {
+  align-items: flex-start;
+}
+
+.project-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+}
+
+.project-entry-actions {
+  align-self: center;
+  justify-content: flex-end;
+  min-width: 260px;
+}
+
+.stage-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--status-info-border);
+  background: var(--status-info-bg);
+  color: var(--status-info-ink);
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .workflow-meta {
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .workflow-track {
   height: 8px;
   border-radius: 999px;
-  background: #e5e7eb;
-  margin: 6px 0;
+  background: var(--status-neutral-border);
+  margin: 8px 0 0;
   overflow: hidden;
 }
 
 .workflow-fill {
   height: 100%;
-  background: linear-gradient(90deg, #1d4ed8, #10b981);
+  background: linear-gradient(90deg, var(--brand), var(--success));
+}
+
+@media (max-width: 1180px) {
+  .project-entry-actions {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .project-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 </style>

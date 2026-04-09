@@ -1746,7 +1746,7 @@ useTimelineScreenShell({
 }
 
 .timeline-summary-panel {
-  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  background: var(--surface-spotlight);
 }
 
 @media (max-width: 980px) {

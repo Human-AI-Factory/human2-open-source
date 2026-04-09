@@ -117,9 +117,9 @@ const handleDockSearchInput = (event: Event): void => {
 
 <style scoped>
 .studio-dock {
-  border: 1px solid #d7deea;
+  border: 1px solid var(--line);
   border-radius: 10px;
-  background: #f8fbff;
+  background: var(--surface-spotlight);
   padding: 10px;
   position: relative;
   display: grid;
@@ -136,7 +136,7 @@ const handleDockSearchInput = (event: Event): void => {
 .studio-dock.floating {
   position: fixed;
   z-index: 40;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
+  box-shadow: var(--shadow-float);
   max-height: min(78vh, 900px);
 }
 
@@ -145,7 +145,7 @@ const handleDockSearchInput = (event: Event): void => {
 }
 
 .studio-dock.pinned {
-  box-shadow: 0 0 0 2px rgba(47, 111, 237, 0.24), 0 12px 24px rgba(15, 23, 42, 0.2);
+  box-shadow: var(--selection-shadow-float);
 }
 
 .studio-dock.locked .drag-handle {
@@ -181,7 +181,7 @@ const handleDockSearchInput = (event: Event): void => {
   left: 5px;
   width: 2px;
   border-radius: 1px;
-  background: rgba(126, 143, 175, 0.35);
+  background: var(--status-neutral-border);
 }
 
 .drag-handle {

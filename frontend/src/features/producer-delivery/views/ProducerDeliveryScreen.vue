@@ -350,16 +350,16 @@ onMounted(() => {
 }
 
 .producer-delivery-hero {
-  border: 1px solid #d9e4ff;
-  background: linear-gradient(160deg, #f7fbff 0%, #eef5ff 100%);
+  border: 1px solid var(--status-info-border);
+  background: var(--surface-spotlight-angled);
 }
 
 .sticky-summary {
   position: sticky;
   top: 12px;
   z-index: 3;
-  border: 1px solid #bdd5ff;
-  background: linear-gradient(135deg, #f7fbff, #eef6ff);
+  border: 1px solid var(--status-info-border);
+  background: var(--surface-highlight);
 }
 
 </style>

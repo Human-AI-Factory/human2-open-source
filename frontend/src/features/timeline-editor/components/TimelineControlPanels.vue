@@ -416,8 +416,8 @@ const selectedWorkspaceQuickSlotIdModel = computed({
 
 <style scoped>
 .command-panel {
-  border: 1px solid #d3e0f6;
-  background: linear-gradient(180deg, #f8fbff 0%, #f2f7ff 100%);
+  border: 1px solid var(--line);
+  background: var(--surface-spotlight);
 }
 
 .command-input {
@@ -435,26 +435,26 @@ const selectedWorkspaceQuickSlotIdModel = computed({
   position: sticky;
   top: 0;
   z-index: 1;
-  border: 1px solid #bfd2f3;
-  border-radius: 8px;
-  background: #eef5ff;
+  border: 1px solid var(--status-info-border);
+  border-radius: var(--radius-sm);
+  background: var(--status-info-bg);
   padding: 6px 8px;
-  color: #274d87;
+  color: var(--status-info-ink);
   font-size: 12px;
   text-align: left;
   cursor: pointer;
 }
 
 .template-card {
-  border: 1px solid #d7deea;
-  border-radius: 8px;
-  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-canvas);
   padding: 8px;
 }
 
 .template-card.highlighted {
-  border-color: #2f6fed;
-  box-shadow: 0 0 0 2px rgba(47, 111, 237, 0.18);
+  border-color: var(--brand);
+  box-shadow: var(--selection-ring-strong);
 }
 
 @media (max-width: 980px) {

@@ -29,8 +29,8 @@ defineProps<{
 
 <style scoped>
 .hotkey-panel {
-  border: 1px solid #d3e0f6;
-  background: #f8fbff;
+  border: 1px solid var(--line);
+  background: var(--surface-spotlight);
 }
 
 .hotkey-grid {
@@ -42,14 +42,15 @@ defineProps<{
 .hotkey-grid p {
   margin: 0;
   font-size: 13px;
-  color: #334155;
+  color: var(--ink-1);
 }
 
 .hotkey-grid code {
   display: inline-block;
   border-radius: 6px;
   padding: 2px 6px;
-  border: 1px solid #c4d3ee;
-  background: #eef4ff;
+  border: 1px solid var(--status-info-border);
+  background: var(--status-info-bg);
+  color: var(--status-info-ink);
 }
 </style>

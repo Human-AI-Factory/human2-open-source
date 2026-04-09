@@ -362,15 +362,15 @@ const orchestratorRollbackStrategyModel = computed({
 
 <style scoped>
 .timeline-visual {
-  border: 1px solid #d7deea;
+  border: 1px solid var(--line);
   border-radius: 10px;
-  background: #f9fbff;
+  background: var(--surface-panel-soft);
   padding: 10px;
   margin-bottom: 12px;
 }
 
 .timeline-visual.immersive {
-  background: #f4f8ff;
-  border-color: #c8d7f4;
+  background: var(--surface-hover);
+  border-color: var(--status-info-border);
 }
 </style>

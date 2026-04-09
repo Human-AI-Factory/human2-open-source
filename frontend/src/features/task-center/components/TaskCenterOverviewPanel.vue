@@ -78,31 +78,8 @@ const props = defineProps<{
   gap: 10px;
 }
 
-.metric-card {
-  border: 1px solid #dbe3f1;
-  border-radius: 10px;
-  padding: 10px;
-  background: #f8fbff;
-}
-
 .metric-card.clickable {
   cursor: pointer;
-}
-
-.chip-row {
-  margin-top: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chip {
-  border: 1px solid #d0d7de;
-  border-radius: 999px;
-  padding: 2px 10px;
-  background: #f8fafc;
-  color: #334155;
-  font-size: 12px;
 }
 
 @media (max-width: 980px) {

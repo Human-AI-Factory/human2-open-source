@@ -2,8 +2,8 @@
   <div class="shell">
     <header class="shell-header">
       <div class="shell-brand">
-        <p>Creative Pipeline</p>
-        <h1>Toonflow Next Lite</h1>
+        <p class="shell-brand__eyebrow">沪漫二厂 · Creative Workbench</p>
+        <h1>Human-AI-Factory 2</h1>
         <p class="runtime-pill" v-if="runtimeReady">
           {{ isDesktop ? `Desktop · ${platform}${appVersion ? ` · v${appVersion}` : ''}` : 'Web Runtime' }}
           ·
@@ -128,36 +128,51 @@ const onExportDiagnostics = async (): Promise<void> => {
 </script>
 
 <style scoped>
-.runtime-pill {
+.shell-brand__eyebrow {
   margin: 0;
-  font-size: 11px;
-  color: #9fc3ff;
+}
+
+.runtime-pill {
+  margin: 4px 0 0;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  width: fit-content;
+  max-width: 100%;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--status-info-border);
+  background: var(--status-info-bg);
+  color: var(--status-info-ink);
+  font-size: var(--text-2xs);
   letter-spacing: 0.02em;
 }
 
 .desktop-resource-bar {
-  margin-bottom: 12px;
-  border: 1px solid #c8d7ef;
-  border-radius: 10px;
-  background: #f2f7ff;
-  padding: 8px 10px;
+  margin-bottom: var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-panel-strong);
+  padding: var(--space-5) var(--space-6);
+  box-shadow: var(--shadow-lg);
 }
 
 .desktop-queue-list {
-  margin-top: 8px;
+  margin-top: var(--space-4);
 }
 
 .desktop-offline-pill {
-  margin-top: 8px;
+  margin-top: var(--space-4);
   display: inline-block;
-  border: 1px solid #f0cc98;
-  background: #fff8ef;
-  color: #8d4f06;
-  border-radius: 999px;
-  padding: 2px 8px;
+  border: 1px solid var(--status-warning-border);
+  background: var(--status-warning-bg);
+  color: var(--status-warning-ink);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-4);
+  font-size: var(--text-xs);
 }
 
 .desktop-log-panel {
-  margin-top: 8px;
+  margin-top: var(--space-4);
 }
 </style>

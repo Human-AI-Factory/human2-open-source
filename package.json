@@ -1,0 +1,18 @@
+{
+  "name": "toonflow-next-lite",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Desktop packaging metadata for Toonflow Next Lite.",
+  "main": "desktop/main.cjs",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn --cwd frontend build && yarn --cwd backend build",
+    "desktop:start": "electron ./desktop/main.cjs",
+    "desktop:pack": "yarn build && node ./scripts/run-electron-builder.cjs --dir",
+    "desktop:build": "yarn build && node ./scripts/run-electron-builder.cjs"
+  },
+  "devDependencies": {
+    "electron": "^35.2.1",
+    "electron-builder": "^26.0.12"
+  }
+}

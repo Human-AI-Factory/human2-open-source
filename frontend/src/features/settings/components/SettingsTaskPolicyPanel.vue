@@ -167,8 +167,8 @@ const submitTaskFailurePolicies = (): void => {
   align-items: center;
   padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(220, 227, 237, 0.95);
-  background: linear-gradient(180deg, #fff, #f8fbff);
+  border: 1px solid var(--line);
+  background: var(--surface-panel-soft);
 }
 
 .task-policy-panel__policy-copy {

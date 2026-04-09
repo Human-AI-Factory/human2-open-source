@@ -1250,7 +1250,7 @@ pre {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--surface-backdrop);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1258,7 +1258,7 @@ pre {
 }
 
 .dialog {
-  background: var(--bg-primary, #fff);
+  background: var(--surface-canvas);
   border-radius: 8px;
   padding: 24px;
   width: 400px;
@@ -1284,7 +1284,7 @@ pre {
 .form-group textarea {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--line);
   border-radius: 4px;
   font-size: 14px;
 }

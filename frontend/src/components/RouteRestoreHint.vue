@@ -11,7 +11,7 @@ defineProps<{
 <style scoped>
 .route-restore-hint {
   margin: 8px 0 0;
-  color: #1f4fa3;
+  color: var(--status-info-ink);
   font-size: 13px;
 }
 </style>

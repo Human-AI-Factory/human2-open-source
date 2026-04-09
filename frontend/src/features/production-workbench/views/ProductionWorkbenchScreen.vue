@@ -303,7 +303,7 @@ onMounted(() => {
 }
 
 .production-hero-panel {
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  background: var(--surface-spotlight);
 }
 
 .summary-grid,
@@ -319,21 +319,23 @@ onMounted(() => {
 }
 
 .lane-card {
-  border: 1px solid #d8e0ee;
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 12px;
-  background: #f8fbff;
+  background: var(--surface-spotlight);
 }
 
 .route-focus {
-  border-color: #2f6fec;
-  box-shadow: 0 0 0 2px rgba(47, 111, 236, 0.2);
+  border-color: var(--brand);
+  box-shadow: var(--selection-ring);
 }
 
 .tag {
-  border: 1px solid #93a3ba;
+  border: 1px solid var(--status-neutral-border);
   border-radius: 999px;
   padding: 3px 9px;
   font-size: 12px;
+  background: var(--status-neutral-bg);
+  color: var(--status-neutral-ink);
 }
 </style>

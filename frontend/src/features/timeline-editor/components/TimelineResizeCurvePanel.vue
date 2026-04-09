@@ -63,15 +63,15 @@ defineProps<{
 
 <style scoped>
 .resize-curve-preview {
-  border: 1px solid #d7deea;
-  border-radius: 10px;
-  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-panel-soft);
   padding: 8px;
   margin-bottom: 10px;
 }
 
 .resize-curve-preview.snapshot {
-  background: #f8fbff;
+  background: var(--surface-spotlight);
 }
 
 .resize-curve-preview svg {
@@ -81,7 +81,7 @@ defineProps<{
 }
 
 .resize-curve-preview .axis {
-  stroke: #9aa9c1;
+  stroke: var(--line-strong);
   stroke-width: 1;
 }
 
@@ -91,11 +91,11 @@ defineProps<{
 }
 
 .resize-curve-preview .curve.old {
-  stroke: #9ca3af;
+  stroke: var(--status-neutral-ink);
   stroke-dasharray: 4 3;
 }
 
 .resize-curve-preview .curve.new {
-  stroke: #2f6fed;
+  stroke: var(--brand);
 }
 </style>

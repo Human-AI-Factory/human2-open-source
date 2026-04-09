@@ -646,9 +646,9 @@ watch(storyboardId, () => {
 .route-focus-pill {
   margin-top: 2px;
   padding: 6px 10px;
-  border: 1px solid #2f6fec;
+  border: 1px solid var(--status-info-border);
   border-radius: 8px;
-  background: #f4f8ff;
+  background: var(--status-info-bg);
 }
 
 .history-filter-grid {

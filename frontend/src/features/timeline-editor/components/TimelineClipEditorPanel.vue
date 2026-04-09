@@ -572,7 +572,7 @@ const cropAspectLockModel = computed<CropAspectLock>({
 }
 
 .clip-editor.pinned {
-  box-shadow: 0 0 0 2px rgba(47, 111, 237, 0.24), 0 12px 24px rgba(15, 23, 42, 0.2);
+  box-shadow: var(--selection-shadow-float);
 }
 
 .clip-editor.locked .drag-handle {
@@ -585,16 +585,16 @@ const cropAspectLockModel = computed<CropAspectLock>({
 }
 
 .clip-editor {
-  border: 1px solid #d7deea;
-  border-radius: 10px;
-  background: #f8fbff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card-soft);
   padding: 10px;
 }
 
 .clip-editor.floating {
   position: fixed;
   z-index: 41;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
+  box-shadow: var(--shadow-float);
   max-height: min(80vh, 900px);
   overflow: auto;
 }
@@ -613,9 +613,9 @@ const cropAspectLockModel = computed<CropAspectLock>({
 }
 
 .keyframe-canvas-panel {
-  border: 1px solid #d7deea;
-  border-radius: 10px;
-  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-canvas);
   padding: 10px;
   margin-bottom: 10px;
 }
@@ -623,12 +623,12 @@ const cropAspectLockModel = computed<CropAspectLock>({
 .keyframe-canvas {
   position: relative;
   height: 220px;
-  border: 1px solid #d7deea;
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   background:
-    linear-gradient(0deg, rgba(211, 223, 244, 0.3) 1px, transparent 1px) 0 0 / 100% 20%,
-    linear-gradient(90deg, rgba(211, 223, 244, 0.3) 1px, transparent 1px) 0 0 / 20% 100%,
-    #f8fbff;
+    linear-gradient(0deg, var(--canvas-grid-strong) 1px, transparent 1px) 0 0 / 100% 20%,
+    linear-gradient(90deg, var(--canvas-grid-strong) 1px, transparent 1px) 0 0 / 20% 100%,
+    var(--card-soft);
   overflow: hidden;
 }
 
@@ -641,27 +641,27 @@ const cropAspectLockModel = computed<CropAspectLock>({
 }
 
 .keyframe-path-line {
-  stroke: #2563eb;
+  stroke: var(--brand);
   stroke-width: 1.2;
   stroke-dasharray: 3 2;
   opacity: 0.9;
 }
 
 .keyframe-control-line {
-  stroke: #7c8ea8;
+  stroke: var(--line-strong);
   stroke-width: 0.8;
   stroke-dasharray: 2 2;
   opacity: 0.75;
 }
 
 .keyframe-progress-dot {
-  fill: #ef4444;
-  stroke: #fff;
+  fill: var(--status-danger-ink);
+  stroke: var(--card);
   stroke-width: 0.9;
 }
 
 .keyframe-sample-dot {
-  fill: #1d4ed8;
+  fill: var(--status-info-ink);
   opacity: 0.35;
 }
 
@@ -672,7 +672,7 @@ const cropAspectLockModel = computed<CropAspectLock>({
 
 .keyframe-axis {
   position: absolute;
-  background: #8da0bf;
+  background: var(--axis-soft);
   opacity: 0.7;
 }
 
@@ -695,28 +695,28 @@ const cropAspectLockModel = computed<CropAspectLock>({
   width: 24px;
   height: 24px;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   transform: translate(-50%, -50%);
-  color: #fff;
+  color: var(--card);
   font-weight: 700;
   cursor: grab;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
+  box-shadow: var(--shadow-md);
 }
 
 .keyframe-point.start {
-  background: #0f766e;
+  background: var(--status-success-ink);
 }
 
 .keyframe-point.end {
-  background: #2563eb;
+  background: var(--status-info-ink);
 }
 
 .keyframe-point.control {
-  background: #6d28d9;
+  background: var(--status-accent-ink);
 }
 
 .keyframe-point.progress {
-  background: #ef4444;
+  background: var(--status-danger-ink);
 }
 
 .keyframe-point:active {
@@ -728,37 +728,37 @@ const cropAspectLockModel = computed<CropAspectLock>({
 }
 
 .crop-canvas-panel {
-  border: 1px dashed #c7d3e6;
-  border-radius: 10px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
   padding: 8px;
-  background: #f8fbff;
+  background: var(--card-soft);
 }
 
 .crop-canvas {
   position: relative;
   width: 100%;
   aspect-ratio: 16/9;
-  border: 1px solid #d7deea;
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  background: linear-gradient(135deg, #eef3fb 0%, #f7fbff 100%);
+  background: linear-gradient(135deg, var(--status-neutral-bg) 0%, var(--card-soft) 100%);
 }
 
 .crop-grid {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(124, 142, 168, 0.2) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(124, 142, 168, 0.2) 1px, transparent 1px);
+    linear-gradient(to right, var(--canvas-grid-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--canvas-grid-soft) 1px, transparent 1px);
   background-size: 20% 20%;
 }
 
 .crop-box {
   position: absolute;
-  border: 2px solid #2563eb;
-  background: rgba(37, 99, 235, 0.12);
+  border: 2px solid var(--brand);
+  background: var(--brand-glow);
   border-radius: 6px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 0 0 1px var(--contrast-strong);
   cursor: move;
 }
 
@@ -768,9 +768,9 @@ const cropAspectLockModel = computed<CropAspectLock>({
   bottom: -6px;
   width: 14px;
   height: 14px;
-  border: 1px solid #1d4ed8;
+  border: 1px solid var(--status-info-ink);
   border-radius: 4px;
-  background: #fff;
+  background: var(--card);
   cursor: nwse-resize;
 }
 </style>

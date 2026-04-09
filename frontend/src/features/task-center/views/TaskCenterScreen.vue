@@ -908,14 +908,15 @@ useTaskCenterScreenShell({
 }
 
 .result-panel {
-  border: 1px solid #dbe3f1;
-  border-radius: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
   padding: 12px;
-  background: #fff;
+  background: var(--surface-panel-soft);
+  box-shadow: var(--shadow-sm);
 }
 
 .runtime-panel {
-  background: linear-gradient(180deg, #f9fcff 0%, #ffffff 38%);
+  background: var(--surface-panel-strong);
 }
 
 .compact-panel {

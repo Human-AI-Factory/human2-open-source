@@ -18,7 +18,7 @@
             <strong>{{ prompt.title }}</strong>
             <span>{{ prompt.key }}</span>
           </div>
-          <span v-if="isPromptDirty(prompt)" class="prompt-desk__dirty-indicator">未保存</span>
+          <span v-if="isPromptDirty(prompt)" class="status-pill status-pill--warning prompt-desk__dirty-indicator">未保存</span>
         </button>
       </div>
     </aside>
@@ -122,65 +122,60 @@ const isPromptDirty = (prompt: PromptTemplate): boolean => (props.promptDrafts[p
   margin: 0;
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
-  gap: 16px;
+  gap: var(--space-7);
   min-height: clamp(480px, 60vh, 760px);
 }
 
 .prompt-desk__sidebar {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 12px;
+  gap: var(--space-5);
   min-height: 0;
 }
 
 .prompt-desk__sidebar-head {
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .prompt-desk__sidebar-list {
   min-height: 0;
   overflow-y: auto;
   display: grid;
-  gap: 8px;
-  padding-right: 4px;
+  gap: var(--space-3);
+  padding-right: var(--space-1);
 }
 
 .prompt-desk__nav-item {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-5);
   align-items: start;
-  padding: 10px 12px;
+  padding: var(--space-4) var(--space-5);
   border-radius: 14px;
-  border: 1px solid rgba(215, 223, 235, 0.95);
-  background: linear-gradient(180deg, #fff, #f8fbff);
+  border: 1px solid var(--line);
+  background: var(--surface-panel-soft);
   text-align: left;
 }
 
 .prompt-desk__nav-item--active {
-  border-color: rgba(14, 91, 216, 0.4);
-  box-shadow: 0 10px 24px rgba(13, 30, 64, 0.08);
+  border-color: var(--brand-line);
+  box-shadow: var(--selection-ring);
 }
 
 .prompt-desk__nav-copy {
   display: grid;
-  gap: 3px;
+  gap: var(--space-1);
 }
 
 .prompt-desk__nav-copy span {
   color: var(--ink-2);
-  font-size: 12px;
+  font-size: var(--text-xs);
 }
 
 .prompt-desk__dirty-indicator {
   flex: none;
-  font-size: 11px;
-  color: #8a4b00;
-  background: #fff1d6;
-  border: 1px solid rgba(196, 140, 34, 0.25);
-  border-radius: 999px;
-  padding: 2px 8px;
+  align-self: start;
 }
 
 .prompt-desk__workspace {
@@ -192,15 +187,15 @@ const isPromptDirty = (prompt: PromptTemplate): boolean => (props.promptDrafts[p
 
 .prompt-desk__workspace--with-history {
   grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 14px;
+  gap: var(--space-6);
 }
 
 .prompt-desk__editor,
 .prompt-desk__history {
   min-height: 0;
-  border-radius: 16px;
-  border: 1px solid rgba(215, 223, 235, 0.94);
-  background: rgba(255, 255, 255, 0.96);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--surface-panel-strong);
 }
 
 .prompt-desk__editor {
@@ -212,20 +207,20 @@ const isPromptDirty = (prompt: PromptTemplate): boolean => (props.promptDrafts[p
 .prompt-desk__editor-head,
 .prompt-desk__editor-footer,
 .prompt-desk__history-head {
-  padding: 14px 16px;
+  padding: var(--space-6) var(--space-7);
 }
 
 .prompt-desk__editor-head {
   display: flex;
   justify-content: space-between;
   align-items: start;
-  gap: 14px;
-  border-bottom: 1px solid rgba(225, 231, 240, 0.9);
+  gap: var(--space-6);
+  border-bottom: 1px solid var(--line);
 }
 
 .prompt-desk__eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.12em;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   font-weight: 700;
   color: var(--ink-2);
@@ -243,19 +238,19 @@ const isPromptDirty = (prompt: PromptTemplate): boolean => (props.promptDrafts[p
   border: 0;
   border-radius: 0;
   background: transparent;
-  padding: 16px;
-  font-family: 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
-  font-size: 13px;
+  padding: var(--space-7);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   line-height: 1.65;
 }
 
 .prompt-desk__editor-footer {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-5);
   align-items: center;
-  border-top: 1px solid rgba(225, 231, 240, 0.9);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), #fff);
+  border-top: 1px solid var(--line);
+  background: var(--surface-panel-soft);
 }
 
 .prompt-desk__history {
@@ -268,22 +263,22 @@ const isPromptDirty = (prompt: PromptTemplate): boolean => (props.promptDrafts[p
   min-height: 0;
   overflow-y: auto;
   display: grid;
-  gap: 10px;
-  padding: 0 14px 14px;
+  gap: var(--space-4);
+  padding: 0 var(--space-6) var(--space-6);
 }
 
 .prompt-desk__history-item {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: var(--space-4);
+  padding: var(--space-5);
   border-radius: 14px;
-  border: 1px solid rgba(220, 227, 237, 0.94);
-  background: linear-gradient(180deg, #fff, #f8fbff);
+  border: 1px solid var(--line);
+  background: var(--surface-panel-soft);
 }
 
 .prompt-desk__history-copy {
   display: grid;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .prompt-desk__empty {

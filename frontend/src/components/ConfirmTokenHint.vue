@@ -30,21 +30,21 @@ const emit = defineEmits<{
 .confirm-token-hint {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-3);
 }
 
 .confirm-token-hint.compact {
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .confirm-token {
   display: inline-block;
-  padding: 1px 6px;
+  padding: 1px var(--space-2);
   border-radius: 6px;
-  background: #f2f4f7;
-  border: 1px solid #e4e7ec;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-  font-size: 12px;
+  background: var(--status-neutral-bg);
+  border: 1px solid var(--status-neutral-border);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
 }
 
 @media (max-width: 768px) {
