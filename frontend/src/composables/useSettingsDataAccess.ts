@@ -6,6 +6,7 @@ import {
   getOpsSummary,
   getMigrationStatus,
   getProviderCapabilityPresets,
+  getProviderTemplates,
   getProviderLogStats,
   getProviderLogs,
   getPromptTemplates,
@@ -18,6 +19,7 @@ import type {
   AutoRepairLogStats,
   ModelConfig,
   OpsSummary,
+  ProviderTemplateDescriptor,
   PromptTemplate,
   ProviderLogBreakdown,
   ProviderLogEntry,
@@ -58,6 +60,7 @@ type UseSettingsDataAccessOptions = {
   modelConfigs: Ref<ModelConfig[]>;
   prompts: Ref<PromptTemplate[]>;
   promptDrafts: Ref<Record<string, string>>;
+  providerTemplates: Ref<ProviderTemplateDescriptor[]>;
   runtimeConfig: Ref<TaskRuntimeConfig>;
   taskFailurePolicies: Ref<TaskFailurePolicyItem[]>;
   taskFailurePolicyAutoApply: Ref<boolean>;
@@ -87,6 +90,7 @@ export const useSettingsDataAccess = (options: UseSettingsDataAccessOptions) => 
         runtime,
         failurePolicies,
         presets,
+        templates,
         summary,
         mergeErrors,
         logs,
@@ -100,6 +104,7 @@ export const useSettingsDataAccess = (options: UseSettingsDataAccessOptions) => 
         getTaskRuntimeConfig(),
         getTaskFailurePolicies(),
         getProviderCapabilityPresets(),
+        getProviderTemplates(),
         getOpsSummary(),
         getVideoMergeErrorStats({
           limit: options.mergeErrorLimit.value,
@@ -118,6 +123,7 @@ export const useSettingsDataAccess = (options: UseSettingsDataAccessOptions) => 
       options.taskFailurePolicyAutoApply.value = failurePolicies.autoApply;
       options.taskFailurePolicyMaxAutoApplyPerTask.value = failurePolicies.maxAutoApplyPerTask;
       options.capabilityPresets.value = presets;
+      options.providerTemplates.value = templates;
       options.opsSummary.value = summary;
       options.mergeErrorStats.value = mergeErrors;
       options.promptDrafts.value = Object.fromEntries(promptList.map((item) => [item.id, item.content]));

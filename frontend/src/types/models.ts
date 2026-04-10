@@ -659,6 +659,34 @@ export interface ModelConnectionTestResult {
   statusCode: number | null;
 }
 
+export interface ProviderCatalogCapability {
+  taskType: 'text' | 'image' | 'video' | 'audio';
+  enabled: boolean;
+}
+
+export interface ProviderCatalogItem {
+  provider: string;
+  label: string;
+  transport: 'http' | 'mock';
+  aliases: string[];
+  notes?: string;
+  capabilities: ProviderCatalogCapability[];
+}
+
+export interface ProviderTemplateDescriptor {
+  type: 'text' | 'image' | 'video' | 'audio';
+  manufacturer: string;
+  label: string;
+  provider: string;
+  authType: 'bearer' | 'api_key' | 'none';
+  description: string;
+  endpointTemplates: Record<string, string>;
+  modelPlaceholder: string;
+  tags: string[];
+  aliases: string[];
+  capabilities: Record<string, unknown>;
+}
+
 export interface AudioTask {
   id: string;
   projectId: string;

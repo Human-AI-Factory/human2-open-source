@@ -9,6 +9,7 @@ import { AdminAuditService } from './admin-audit.service.js';
 import { PROVIDER_CAPABILITY_PRESETS } from './capability-presets.js';
 import { importModelDraftFromExample } from './model-config-example-import.js';
 import { ModelConnectionService } from './model-connection.service.js';
+import { listProviderTemplateDescriptors } from './provider-template-catalog.js';
 import { SettingsService } from './settings.service.js';
 
 const modelTypeSchema = z.enum(['text', 'image', 'video', 'audio']);
@@ -307,6 +308,10 @@ export const buildSettingsRouter = (service: SettingsService, deps: SettingsRout
 
   router.get('/providers/capabilities', (_req, res) => {
     return res.json(providerRegistryService.getProviderCatalogCapabilities());
+  });
+
+  router.get('/providers/templates', (_req, res) => {
+    return res.json(listProviderTemplateDescriptors());
   });
 
   router.get('/providers/capability-presets', (_req, res) => {

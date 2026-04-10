@@ -4,6 +4,7 @@ import type {
   AutoRepairLogStats,
   ModelConfig,
   OpsSummary,
+  ProviderTemplateDescriptor,
   PromptTemplate,
   PromptTemplateVersion,
   ProviderLogBreakdown,
@@ -92,6 +93,7 @@ export const useSettingsScreenState = () => {
   const newModel = ref<ModelDraft>(buildEmptyModelDraft());
   const editingModel = ref<ModelDraft | null>(null);
   const capabilityPresets = ref<Record<string, Record<string, Record<string, unknown>>>>({});
+  const providerTemplates = ref<ProviderTemplateDescriptor[]>([]);
 
   return {
     autoRepairLogs,
@@ -122,6 +124,7 @@ export const useSettingsScreenState = () => {
     promptDrafts,
     prompts,
     promptVersions,
+    providerTemplates,
     providerLogs,
     providerLogKeyword,
     providerLogLimit,

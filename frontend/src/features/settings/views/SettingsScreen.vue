@@ -439,8 +439,8 @@
                 activeDrawer === 'import'
                   ? '支持直接粘贴 curl、Python requests 或 Python OpenAI SDK 示例，并自动回填模型表单。'
                   : activeDrawer === 'create'
-                    ? '保持所有原有字段和 providerOptions 规则编辑器，只是改成抽屉式录入。'
-                    : '在不离开当前页的前提下修改已有模型。'
+                    ? '先选类型和厂商模板，再补真实模型、API Key 和端点；原始字段收进高级设置。'
+                    : '编辑页也按同一套厂商模板目录工作，低频原始字段折叠到高级设置。'
               }}
             </p>
           </div>
@@ -467,60 +467,202 @@
         </div>
 
         <form v-else-if="activeDrawer === 'create'" class="form settings-drawer__body" @submit.prevent="handleCreateModel">
-          <div class="settings-drawer__toolbar">
-            <button type="button" @click="applyCapabilityPreset()">应用能力预置</button>
-            <button type="button" @click="fillDefaultEndpoints()">填充默认端点模板</button>
-            <button type="button" @click="testNewModelConnection" :disabled="newModelConnectionLoading">
-              {{ newModelConnectionLoading ? '测试中...' : '测试连接' }}
-            </button>
-          </div>
-          <select v-model="newModel.type">
-            <option value="text">text</option>
-            <option value="image">image</option>
-            <option value="video">video</option>
-            <option value="audio">audio</option>
-          </select>
-          <input v-model="newModel.name" placeholder="模型名称" />
-          <input v-model="newModel.provider" placeholder="服务商（如 http/openai/mock）" />
-          <input v-model="newModel.manufacturer" placeholder="厂商（如 atlascloud/apimart/openai/gemini/vidu）" />
-          <input v-model="newModel.model" placeholder="真实模型名（如 doubao-seedance-1-5-pro）" />
-          <select v-model="newModel.authType">
-            <option value="bearer">bearer</option>
-            <option value="api_key">api_key</option>
-            <option value="none">none</option>
-          </select>
-          <input v-model="newModel.endpoint" placeholder="接口地址" />
-          <textarea v-model="newModel.endpointsText" rows="3" placeholder='多端点 JSON，如 {"submit":"...","query":"..."}' />
-          <textarea v-model="newModel.capabilitiesText" rows="4" placeholder='能力 JSON，可留空。如 {"video":{"modes":["text"],"durations":[5]}}' />
-          <div class="panel" style="margin: 0">
-            <h4>providerOptions 规则编辑器</h4>
-            <div class="actions">
-              <button type="button" @click="syncProviderOptionRulesFromCapabilities('new')">从能力JSON读取</button>
-              <button type="button" @click="persistProviderOptionRulesToCapabilities('new')">写回能力JSON</button>
-              <button type="button" @click="addProviderOptionRule('new')">新增规则</button>
-              <button type="button" @click="exportProviderOptionRulesTemplate('new')">导出规则模板</button>
-              <button type="button" @click="triggerImportProviderOptionRulesTemplate('new')">导入规则模板</button>
+          <section class="settings-template-step">
+            <div class="settings-template-step__head">
+              <div>
+                <div class="settings-section__eyebrow">Step 01</div>
+                <h4>选择能力类型</h4>
+                <p class="muted">先确定模型承担的是文本、图像、视频还是语音能力。</p>
+              </div>
+              <span class="summary-tag">后台模板 {{ createProviderTemplates.length }}</span>
             </div>
-            <ProviderOptionRuleTree
-              :rules="newProviderOptionRules"
-              :search-query="newProviderRuleSearchQuery"
-              :clipboard-node="newProviderRuleClipboard"
-              @change="persistProviderOptionRulesToCapabilities('new')"
-              @copy-node="copyProviderOptionRuleNode('new', $event)"
-              @search-query-update="updateProviderOptionRuleSearchQuery('new', $event)"
-            />
-            <input
-              ref="newProviderRulesTemplateInput"
-              type="file"
-              accept="application/json"
-              style="display: none"
-              @change="handleImportProviderOptionRulesTemplate('new', $event)"
-            />
-          </div>
-          <input v-model="newModel.apiKey" placeholder="API Key" />
-          <input v-model.number="newModel.priority" type="number" min="0" max="100000" placeholder="优先级（数字越小越优先）" />
-          <input v-model.number="newModel.rateLimit" type="number" min="0" max="100000" placeholder="限流阈值（每分钟）" />
-          <label><input v-model="newModel.isDefault" type="checkbox" /> 设为默认</label>
+            <div class="settings-template-type-grid">
+              <button
+                v-for="type in MODEL_TYPE_ORDER"
+                :key="`create-${type}`"
+                type="button"
+                class="settings-template-type-card"
+                :class="{ 'settings-template-type-card--active': newModel.type === type }"
+                @click="chooseDraftType('new', type)"
+              >
+                <strong>{{ MODEL_TYPE_LABELS[type] }}</strong>
+                <span>{{ MODEL_TYPE_DESCRIPTIONS[type] }}</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="settings-template-step">
+            <div class="settings-template-step__head">
+              <div>
+                <div class="settings-section__eyebrow">Step 02</div>
+                <h4>选择厂商模板</h4>
+                <p class="muted">这里直接读后台模板目录，不再手填厂商与能力 JSON。</p>
+              </div>
+            </div>
+            <div class="settings-template-vendor-grid">
+              <button
+                v-for="template in createProviderTemplates"
+                :key="`create-template-${template.type}-${template.manufacturer}`"
+                type="button"
+                class="settings-template-card"
+                :class="{ 'settings-template-card--active': selectedCreateTemplate?.manufacturer === template.manufacturer }"
+                @click="applyTemplateToDraft('new', template)"
+              >
+                <div class="settings-template-card__head">
+                  <strong>{{ template.label }}</strong>
+                  <span class="summary-tag">{{ template.provider }}</span>
+                </div>
+                <p class="muted">{{ template.description }}</p>
+                <div class="summary-tags">
+                  <span class="summary-tag" v-for="tag in template.tags.slice(0, 4)" :key="`create-${template.manufacturer}-${tag}`">
+                    {{ tag }}
+                  </span>
+                </div>
+              </button>
+            </div>
+          </section>
+
+          <section v-if="selectedCreateTemplate" class="settings-template-step">
+            <div class="settings-template-step__head">
+              <div>
+                <div class="settings-section__eyebrow">Step 03</div>
+                <h4>能力模板预览</h4>
+                <p class="muted">模板已经自动回填到表单，下面只需要补真实模型、密钥和端点。</p>
+              </div>
+              <button type="button" @click="applyTemplateToDraft('new', selectedCreateTemplate)">重新应用模板</button>
+            </div>
+            <div class="settings-template-preview">
+              <div class="settings-template-preview__facts">
+                <div><span>厂商</span><strong>{{ selectedCreateTemplate.label }}</strong></div>
+                <div><span>接入层</span><strong>{{ selectedCreateTemplate.provider }}</strong></div>
+                <div><span>鉴权</span><strong>{{ selectedCreateTemplate.authType }}</strong></div>
+                <div><span>默认端点</span><strong>{{ selectedCreateTemplate.endpointTemplates.submit || '未提供' }}</strong></div>
+              </div>
+              <div class="summary-tags" v-if="selectedCreateTemplateSummary.length || selectedCreateTemplate.aliases.length">
+                <span class="summary-tag" v-for="item in selectedCreateTemplateSummary" :key="`create-summary-${item}`">{{ item }}</span>
+                <span class="summary-tag" v-for="alias in selectedCreateTemplate.aliases" :key="`create-alias-${alias}`">alias: {{ alias }}</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-template-step">
+            <div class="settings-template-step__head">
+              <div>
+                <div class="settings-section__eyebrow">Step 04</div>
+                <h4>填写凭据与真实模型</h4>
+                <p class="muted">主流程只保留高频字段。原始 provider/manufacturer/capabilities 编辑器收进高级设置。</p>
+              </div>
+              <button type="button" @click="testNewModelConnection" :disabled="newModelConnectionLoading">
+                {{ newModelConnectionLoading ? '测试中...' : '测试连接' }}
+              </button>
+            </div>
+            <div class="settings-template-form-grid">
+              <label class="settings-template-field">
+                <span>模型名称</span>
+                <input v-model="newModel.name" placeholder="展示名称，如 Vidu 视频生产版" />
+              </label>
+              <label class="settings-template-field">
+                <span>真实模型名</span>
+                <input v-model="newModel.model" :placeholder="templateModelPlaceholder(selectedCreateTemplate)" />
+              </label>
+              <label class="settings-template-field settings-template-field--wide">
+                <span>API Key</span>
+                <input v-model="newModel.apiKey" placeholder="填写真实 API Key / Token" />
+              </label>
+              <label class="settings-template-field settings-template-field--wide">
+                <span>主接口地址</span>
+                <input v-model="newModel.endpoint" placeholder="接口地址" />
+              </label>
+            </div>
+            <div class="settings-template-inline-facts">
+              <span class="summary-tag">provider: {{ newModel.provider || '未选' }}</span>
+              <span class="summary-tag">manufacturer: {{ newModel.manufacturer || '未选' }}</span>
+              <span class="summary-tag">auth: {{ newModel.authType }}</span>
+            </div>
+            <label><input v-model="newModel.isDefault" type="checkbox" /> 设为默认</label>
+          </section>
+
+          <details class="settings-disclosure settings-drawer__advanced">
+            <summary>
+              <span>高级设置</span>
+              <small>原始字段、能力 JSON、多端点与 providerOptions 规则树</small>
+            </summary>
+            <div class="settings-disclosure__body settings-drawer__advanced-body">
+              <div class="settings-drawer__toolbar">
+                <button type="button" @click="applyCapabilityPreset()">应用能力预置</button>
+                <button type="button" @click="fillDefaultEndpoints()">填充默认端点模板</button>
+                <button type="button" @click="syncProviderOptionRulesFromCapabilities('new')">从能力JSON读取规则</button>
+                <button type="button" @click="persistProviderOptionRulesToCapabilities('new')">写回能力JSON</button>
+              </div>
+              <div class="settings-template-form-grid">
+                <label class="settings-template-field">
+                  <span>类型</span>
+                  <select v-model="newModel.type">
+                    <option value="text">text</option>
+                    <option value="image">image</option>
+                    <option value="video">video</option>
+                    <option value="audio">audio</option>
+                  </select>
+                </label>
+                <label class="settings-template-field">
+                  <span>provider</span>
+                  <input v-model="newModel.provider" placeholder="服务商（如 http/openai/mock）" />
+                </label>
+                <label class="settings-template-field">
+                  <span>manufacturer</span>
+                  <input v-model="newModel.manufacturer" placeholder="厂商（如 openai/gemini/vidu）" />
+                </label>
+                <label class="settings-template-field">
+                  <span>鉴权</span>
+                  <select v-model="newModel.authType">
+                    <option value="bearer">bearer</option>
+                    <option value="api_key">api_key</option>
+                    <option value="none">none</option>
+                  </select>
+                </label>
+                <label class="settings-template-field settings-template-field--wide">
+                  <span>多端点 JSON</span>
+                  <textarea v-model="newModel.endpointsText" rows="3" placeholder='{"submit":"...","query":"..."}' />
+                </label>
+                <label class="settings-template-field settings-template-field--wide">
+                  <span>能力 JSON</span>
+                  <textarea v-model="newModel.capabilitiesText" rows="4" placeholder='{"video":{"modes":["text"],"durations":[5]}}' />
+                </label>
+                <label class="settings-template-field">
+                  <span>优先级</span>
+                  <input v-model.number="newModel.priority" type="number" min="0" max="100000" placeholder="优先级" />
+                </label>
+                <label class="settings-template-field">
+                  <span>限流阈值 / 分钟</span>
+                  <input v-model.number="newModel.rateLimit" type="number" min="0" max="100000" placeholder="限流阈值" />
+                </label>
+              </div>
+              <div class="panel settings-template-rule-panel">
+                <h4>providerOptions 规则编辑器</h4>
+                <div class="actions">
+                  <button type="button" @click="addProviderOptionRule('new')">新增规则</button>
+                  <button type="button" @click="exportProviderOptionRulesTemplate('new')">导出规则模板</button>
+                  <button type="button" @click="triggerImportProviderOptionRulesTemplate('new')">导入规则模板</button>
+                </div>
+                <ProviderOptionRuleTree
+                  :rules="newProviderOptionRules"
+                  :search-query="newProviderRuleSearchQuery"
+                  :clipboard-node="newProviderRuleClipboard"
+                  @change="persistProviderOptionRulesToCapabilities('new')"
+                  @copy-node="copyProviderOptionRuleNode('new', $event)"
+                  @search-query-update="updateProviderOptionRuleSearchQuery('new', $event)"
+                />
+                <input
+                  ref="newProviderRulesTemplateInput"
+                  type="file"
+                  accept="application/json"
+                  style="display: none"
+                  @change="handleImportProviderOptionRulesTemplate('new', $event)"
+                />
+              </div>
+            </div>
+          </details>
+
           <SettingsModelConnectionResult :loading="newModelConnectionLoading" :result="newModelConnectionResult" />
           <div class="actions settings-drawer__footer">
             <button type="button" @click="closeDrawer">取消</button>
@@ -529,61 +671,205 @@
         </form>
 
         <form v-else-if="activeDrawer === 'edit' && editingModel" class="form settings-drawer__body" @submit.prevent="handleSaveEditModel">
-          <div class="settings-drawer__toolbar">
-            <button type="button" @click="applyCapabilityPreset(editingModel)">应用能力预置</button>
-            <button type="button" @click="fillDefaultEndpoints(editingModel)">填充默认端点模板</button>
-            <button type="button" @click="testEditingModelConnection" :disabled="editingModelConnectionLoading">
-              {{ editingModelConnectionLoading ? '测试中...' : '测试连接' }}
-            </button>
-          </div>
-          <select v-model="editingModel.type">
-            <option value="text">text</option>
-            <option value="image">image</option>
-            <option value="video">video</option>
-            <option value="audio">audio</option>
-          </select>
-          <input v-model="editingModel.name" placeholder="模型名称" />
-          <input v-model="editingModel.provider" placeholder="服务商（如 http/openai/mock）" />
-          <input v-model="editingModel.manufacturer" placeholder="厂商（如 atlascloud/apimart/openai/gemini/vidu）" />
-          <input v-model="editingModel.model" placeholder="真实模型名" />
-          <select v-model="editingModel.authType">
-            <option value="bearer">bearer</option>
-            <option value="api_key">api_key</option>
-            <option value="none">none</option>
-          </select>
-          <input v-model="editingModel.endpoint" placeholder="接口地址" />
-          <textarea v-model="editingModel.endpointsText" rows="3" placeholder='多端点 JSON，如 {"submit":"...","query":"..."}' />
-          <textarea v-model="editingModel.capabilitiesText" rows="4" placeholder="能力 JSON，可留空" />
-          <div class="panel" style="margin: 0">
-            <h4>providerOptions 规则编辑器</h4>
-            <div class="actions">
-              <button type="button" @click="syncProviderOptionRulesFromCapabilities('edit')">从能力JSON读取</button>
-              <button type="button" @click="persistProviderOptionRulesToCapabilities('edit')">写回能力JSON</button>
-              <button type="button" @click="addProviderOptionRule('edit')">新增规则</button>
-              <button type="button" @click="exportProviderOptionRulesTemplate('edit')">导出规则模板</button>
-              <button type="button" @click="triggerImportProviderOptionRulesTemplate('edit')">导入规则模板</button>
+          <section class="settings-template-step">
+            <div class="settings-template-step__head">
+              <div>
+                <div class="settings-section__eyebrow">Step 01</div>
+                <h4>调整能力类型</h4>
+                <p class="muted">编辑时也按同一套模板目录来切换类型和厂商。</p>
+              </div>
+              <span class="summary-tag">当前 {{ editingModel.name }}</span>
             </div>
-            <ProviderOptionRuleTree
-              :rules="editProviderOptionRules"
-              :search-query="editProviderRuleSearchQuery"
-              :clipboard-node="editProviderRuleClipboard"
-              @change="persistProviderOptionRulesToCapabilities('edit')"
-              @copy-node="copyProviderOptionRuleNode('edit', $event)"
-              @search-query-update="updateProviderOptionRuleSearchQuery('edit', $event)"
-            />
-            <input
-              ref="editProviderRulesTemplateInput"
-              type="file"
-              accept="application/json"
-              style="display: none"
-              @change="handleImportProviderOptionRulesTemplate('edit', $event)"
-            />
-          </div>
-          <input v-model="editingModel.apiKey" placeholder="API Key（留空表示不修改）" />
-          <input v-model.number="editingModel.priority" type="number" min="0" max="100000" placeholder="优先级" />
-          <input v-model.number="editingModel.rateLimit" type="number" min="0" max="100000" placeholder="限流阈值（每分钟）" />
-          <label><input v-model="editingModel.isDefault" type="checkbox" /> 设为默认</label>
-          <label><input v-model="editingModel.enabled" type="checkbox" /> 启用</label>
+            <div class="settings-template-type-grid">
+              <button
+                v-for="type in MODEL_TYPE_ORDER"
+                :key="`edit-${type}`"
+                type="button"
+                class="settings-template-type-card"
+                :class="{ 'settings-template-type-card--active': editingModel.type === type }"
+                @click="chooseDraftType('edit', type)"
+              >
+                <strong>{{ MODEL_TYPE_LABELS[type] }}</strong>
+                <span>{{ MODEL_TYPE_DESCRIPTIONS[type] }}</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="settings-template-step">
+            <div class="settings-template-step__head">
+              <div>
+                <div class="settings-section__eyebrow">Step 02</div>
+                <h4>切换厂商模板</h4>
+                <p class="muted">切换模板会重置 endpoint 与能力默认值，但不会覆盖你已填的 API Key。</p>
+              </div>
+            </div>
+            <div class="settings-template-vendor-grid">
+              <button
+                v-for="template in editProviderTemplates"
+                :key="`edit-template-${template.type}-${template.manufacturer}`"
+                type="button"
+                class="settings-template-card"
+                :class="{ 'settings-template-card--active': selectedEditTemplate?.manufacturer === template.manufacturer }"
+                @click="applyTemplateToDraft('edit', template)"
+              >
+                <div class="settings-template-card__head">
+                  <strong>{{ template.label }}</strong>
+                  <span class="summary-tag">{{ template.provider }}</span>
+                </div>
+                <p class="muted">{{ template.description }}</p>
+                <div class="summary-tags">
+                  <span class="summary-tag" v-for="tag in template.tags.slice(0, 4)" :key="`edit-${template.manufacturer}-${tag}`">
+                    {{ tag }}
+                  </span>
+                </div>
+              </button>
+            </div>
+          </section>
+
+          <section v-if="selectedEditTemplate" class="settings-template-step">
+            <div class="settings-template-step__head">
+              <div>
+                <div class="settings-section__eyebrow">Step 03</div>
+                <h4>模板预览</h4>
+                <p class="muted">编辑模板时会使用相同的后台模板目录与预置能力。</p>
+              </div>
+              <button type="button" @click="applyTemplateToDraft('edit', selectedEditTemplate)">重新应用模板</button>
+            </div>
+            <div class="settings-template-preview">
+              <div class="settings-template-preview__facts">
+                <div><span>厂商</span><strong>{{ selectedEditTemplate.label }}</strong></div>
+                <div><span>接入层</span><strong>{{ selectedEditTemplate.provider }}</strong></div>
+                <div><span>鉴权</span><strong>{{ selectedEditTemplate.authType }}</strong></div>
+                <div><span>默认端点</span><strong>{{ selectedEditTemplate.endpointTemplates.submit || '未提供' }}</strong></div>
+              </div>
+              <div class="summary-tags" v-if="selectedEditTemplateSummary.length || selectedEditTemplate.aliases.length">
+                <span class="summary-tag" v-for="item in selectedEditTemplateSummary" :key="`edit-summary-${item}`">{{ item }}</span>
+                <span class="summary-tag" v-for="alias in selectedEditTemplate.aliases" :key="`edit-alias-${alias}`">alias: {{ alias }}</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-template-step">
+            <div class="settings-template-step__head">
+              <div>
+                <div class="settings-section__eyebrow">Step 04</div>
+                <h4>更新连接与模型信息</h4>
+                <p class="muted">保留高频可改字段，低频原始字段继续收进高级设置。</p>
+              </div>
+              <button type="button" @click="testEditingModelConnection" :disabled="editingModelConnectionLoading">
+                {{ editingModelConnectionLoading ? '测试中...' : '测试连接' }}
+              </button>
+            </div>
+            <div class="settings-template-form-grid">
+              <label class="settings-template-field">
+                <span>模型名称</span>
+                <input v-model="editingModel.name" placeholder="模型名称" />
+              </label>
+              <label class="settings-template-field">
+                <span>真实模型名</span>
+                <input v-model="editingModel.model" :placeholder="templateModelPlaceholder(selectedEditTemplate)" />
+              </label>
+              <label class="settings-template-field settings-template-field--wide">
+                <span>API Key</span>
+                <input v-model="editingModel.apiKey" placeholder="留空表示不修改已有 API Key" />
+              </label>
+              <label class="settings-template-field settings-template-field--wide">
+                <span>主接口地址</span>
+                <input v-model="editingModel.endpoint" placeholder="接口地址" />
+              </label>
+            </div>
+            <div class="settings-template-inline-facts">
+              <span class="summary-tag">provider: {{ editingModel.provider || '未选' }}</span>
+              <span class="summary-tag">manufacturer: {{ editingModel.manufacturer || '未选' }}</span>
+              <span class="summary-tag">auth: {{ editingModel.authType }}</span>
+            </div>
+            <div class="actions">
+              <label><input v-model="editingModel.isDefault" type="checkbox" /> 设为默认</label>
+              <label><input v-model="editingModel.enabled" type="checkbox" /> 启用</label>
+            </div>
+          </section>
+
+          <details class="settings-disclosure settings-drawer__advanced">
+            <summary>
+              <span>高级设置</span>
+              <small>保留原有 provider/manufacturer/raw JSON/providerOptions 编辑能力</small>
+            </summary>
+            <div class="settings-disclosure__body settings-drawer__advanced-body">
+              <div class="settings-drawer__toolbar">
+                <button type="button" @click="applyCapabilityPreset(editingModel)">应用能力预置</button>
+                <button type="button" @click="fillDefaultEndpoints(editingModel)">填充默认端点模板</button>
+                <button type="button" @click="syncProviderOptionRulesFromCapabilities('edit')">从能力JSON读取规则</button>
+                <button type="button" @click="persistProviderOptionRulesToCapabilities('edit')">写回能力JSON</button>
+              </div>
+              <div class="settings-template-form-grid">
+                <label class="settings-template-field">
+                  <span>类型</span>
+                  <select v-model="editingModel.type">
+                    <option value="text">text</option>
+                    <option value="image">image</option>
+                    <option value="video">video</option>
+                    <option value="audio">audio</option>
+                  </select>
+                </label>
+                <label class="settings-template-field">
+                  <span>provider</span>
+                  <input v-model="editingModel.provider" placeholder="服务商（如 http/openai/mock）" />
+                </label>
+                <label class="settings-template-field">
+                  <span>manufacturer</span>
+                  <input v-model="editingModel.manufacturer" placeholder="厂商（如 atlascloud/apimart/openai/gemini/vidu）" />
+                </label>
+                <label class="settings-template-field">
+                  <span>鉴权</span>
+                  <select v-model="editingModel.authType">
+                    <option value="bearer">bearer</option>
+                    <option value="api_key">api_key</option>
+                    <option value="none">none</option>
+                  </select>
+                </label>
+                <label class="settings-template-field settings-template-field--wide">
+                  <span>多端点 JSON</span>
+                  <textarea v-model="editingModel.endpointsText" rows="3" placeholder='{"submit":"...","query":"..."}' />
+                </label>
+                <label class="settings-template-field settings-template-field--wide">
+                  <span>能力 JSON</span>
+                  <textarea v-model="editingModel.capabilitiesText" rows="4" placeholder="能力 JSON，可留空" />
+                </label>
+                <label class="settings-template-field">
+                  <span>优先级</span>
+                  <input v-model.number="editingModel.priority" type="number" min="0" max="100000" placeholder="优先级" />
+                </label>
+                <label class="settings-template-field">
+                  <span>限流阈值 / 分钟</span>
+                  <input v-model.number="editingModel.rateLimit" type="number" min="0" max="100000" placeholder="限流阈值" />
+                </label>
+              </div>
+              <div class="panel settings-template-rule-panel">
+                <h4>providerOptions 规则编辑器</h4>
+                <div class="actions">
+                  <button type="button" @click="addProviderOptionRule('edit')">新增规则</button>
+                  <button type="button" @click="exportProviderOptionRulesTemplate('edit')">导出规则模板</button>
+                  <button type="button" @click="triggerImportProviderOptionRulesTemplate('edit')">导入规则模板</button>
+                </div>
+                <ProviderOptionRuleTree
+                  :rules="editProviderOptionRules"
+                  :search-query="editProviderRuleSearchQuery"
+                  :clipboard-node="editProviderRuleClipboard"
+                  @change="persistProviderOptionRulesToCapabilities('edit')"
+                  @copy-node="copyProviderOptionRuleNode('edit', $event)"
+                  @search-query-update="updateProviderOptionRuleSearchQuery('edit', $event)"
+                />
+                <input
+                  ref="editProviderRulesTemplateInput"
+                  type="file"
+                  accept="application/json"
+                  style="display: none"
+                  @change="handleImportProviderOptionRulesTemplate('edit', $event)"
+                />
+              </div>
+            </div>
+          </details>
+
           <SettingsModelConnectionResult :loading="editingModelConnectionLoading" :result="editingModelConnectionResult" />
           <div class="actions settings-drawer__footer">
             <button type="button" @click="handleCancelEditModel">取消编辑</button>
@@ -620,13 +906,35 @@ import { useSettingsProviderOptionRules } from '@/composables/useSettingsProvide
 import { useSettingsRuntimePolicyOps } from '@/composables/useSettingsRuntimePolicyOps';
 import { useSettingsScreenShell } from '@/composables/useSettingsScreenShell';
 import { importModelConfigExample } from '@/api/settings-admin';
-import type { ModelConfig } from '@/types/models';
+import type { ModelConfig, ProviderTemplateDescriptor } from '@/types/models';
 import { toErrorMessage } from '@/utils/errors';
 
 const router = useRouter();
 const route = useRoute();
 type SettingsSectionKey = 'runtime' | 'models' | 'prompts' | 'ops' | 'logs';
 type SettingsDrawerMode = 'import' | 'create' | 'edit' | null;
+type ModelTaskType = 'text' | 'image' | 'video' | 'audio';
+type ModelFormScope = 'new' | 'edit';
+
+const MODEL_TYPE_ORDER: ModelTaskType[] = ['text', 'image', 'video', 'audio'];
+const MODEL_TYPE_LABELS: Record<ModelTaskType, string> = {
+  text: 'Text',
+  image: 'Image',
+  video: 'Video',
+  audio: 'Audio'
+};
+const MODEL_TYPE_DESCRIPTIONS: Record<ModelTaskType, string> = {
+  text: '对话、脚本、Prompt 与文本推理模型',
+  image: '分镜图、资产图与参考图生成模型',
+  video: '文生视频、图生视频与长任务视频模型',
+  audio: '配音、旁白与语音合成模型'
+};
+const MODEL_TYPE_CHINESE: Record<ModelTaskType, string> = {
+  text: '文本',
+  image: '图像',
+  video: '视频',
+  audio: '语音'
+};
 
 const modelExampleImportText = ref('');
 const modelExampleImportLoading = ref(false);
@@ -670,6 +978,7 @@ const {
   promptDrafts,
   prompts,
   promptVersions,
+  providerTemplates,
   providerLogs,
   providerLogKeyword,
   providerLogLimit,
@@ -722,6 +1031,45 @@ const filteredModelConfigs = computed(() => {
       .some((value) => value.toLowerCase().includes(query));
   });
 });
+
+const findProviderTemplate = (
+  type: ModelTaskType,
+  manufacturer: string
+): ProviderTemplateDescriptor | null => {
+  const normalized = manufacturer.trim().toLowerCase();
+  if (!normalized) {
+    return null;
+  }
+  return (
+    providerTemplates.value.find(
+      (template) =>
+        template.type === type &&
+        (template.manufacturer.trim().toLowerCase() === normalized ||
+          template.aliases.some((alias) => alias.trim().toLowerCase() === normalized))
+    ) ?? null
+  );
+};
+
+const buildTemplateSummary = (template: ProviderTemplateDescriptor): string[] =>
+  capabilitySummary({
+    id: `${template.type}:${template.manufacturer}`,
+    type: template.type,
+    name: template.label,
+    provider: template.provider,
+    manufacturer: template.manufacturer,
+    model: '',
+    authType: template.authType,
+    endpoint: template.endpointTemplates.submit ?? '',
+    endpoints: template.endpointTemplates,
+    apiKey: '',
+    capabilities: template.capabilities,
+    priority: 100,
+    rateLimit: 0,
+    isDefault: false,
+    enabled: true,
+    createdAt: '',
+    updatedAt: ''
+  });
 
 const {
   applyRouteLogFilters,
@@ -785,6 +1133,7 @@ const { loadAll, loadAutoRepairLogs, loadProviderLogs } = useSettingsDataAccess(
   modelConfigs,
   prompts,
   promptDrafts,
+  providerTemplates,
   runtimeConfig,
   taskFailurePolicies,
   taskFailurePolicyAutoApply,
@@ -854,6 +1203,90 @@ const {
   newModel,
   editingModel
 });
+
+const createProviderTemplates = computed(() =>
+  providerTemplates.value.filter((template) => template.type === newModel.value.type)
+);
+const editProviderTemplates = computed(() => {
+  const draft = editingModel.value;
+  return draft ? providerTemplates.value.filter((template) => template.type === draft.type) : [];
+});
+const selectedCreateTemplate = computed(() => findProviderTemplate(newModel.value.type, newModel.value.manufacturer));
+const selectedEditTemplate = computed(() =>
+  editingModel.value ? findProviderTemplate(editingModel.value.type, editingModel.value.manufacturer) : null
+);
+const selectedCreateTemplateSummary = computed(() =>
+  selectedCreateTemplate.value ? buildTemplateSummary(selectedCreateTemplate.value) : []
+);
+const selectedEditTemplateSummary = computed(() =>
+  selectedEditTemplate.value ? buildTemplateSummary(selectedEditTemplate.value) : []
+);
+
+const resetNewDraftState = (): void => {
+  newModel.value = buildEmptyModelDraft();
+  newProviderOptionRules.value = [];
+  newProviderRuleClipboard.value = null;
+  newProviderRuleSearchQuery.value = '';
+  modelExampleImportWarnings.value = [];
+  error.value = '';
+};
+
+const applyTemplateToDraft = (scope: ModelFormScope, template: ProviderTemplateDescriptor): void => {
+  const draft = scope === 'new' ? newModel.value : editingModel.value;
+  if (!draft) {
+    return;
+  }
+  draft.type = template.type;
+  draft.provider = template.provider;
+  draft.manufacturer = template.manufacturer;
+  draft.authType = template.authType;
+  draft.endpoint = template.endpointTemplates.submit ?? '';
+  draft.endpointsText = JSON.stringify(template.endpointTemplates ?? {}, null, 2);
+  draft.capabilitiesText = JSON.stringify(template.capabilities ?? {}, null, 2);
+  if (!draft.name.trim()) {
+    draft.name = `${template.label} ${MODEL_TYPE_CHINESE[template.type]}模型`;
+  }
+  syncProviderOptionRulesFromCapabilities(scope);
+  if (scope === 'new') {
+    clearNewModelConnection();
+  } else {
+    clearEditingModelConnection();
+  }
+  error.value = '';
+};
+
+const chooseDraftType = (scope: ModelFormScope, type: ModelTaskType): void => {
+  const draft = scope === 'new' ? newModel.value : editingModel.value;
+  if (!draft || draft.type === type) {
+    return;
+  }
+  draft.type = type;
+  const matched = findProviderTemplate(type, draft.manufacturer);
+  if (matched) {
+    applyTemplateToDraft(scope, matched);
+    return;
+  }
+  draft.provider = '';
+  draft.manufacturer = '';
+  draft.authType = 'bearer';
+  draft.endpoint = '';
+  draft.endpointsText = '{}';
+  draft.capabilitiesText = '{}';
+  if (scope === 'new') {
+    newProviderOptionRules.value = [];
+    newProviderRuleClipboard.value = null;
+    newProviderRuleSearchQuery.value = '';
+    clearNewModelConnection();
+  } else {
+    editProviderOptionRules.value = [];
+    editProviderRuleClipboard.value = null;
+    editProviderRuleSearchQuery.value = '';
+    clearEditingModelConnection();
+  }
+};
+
+const templateModelPlaceholder = (template: ProviderTemplateDescriptor | null): string =>
+  template?.modelPlaceholder || '真实模型名（如 doubao-seedance-1-5-pro）';
 const { saveRuntimeConfig, saveTaskFailurePolicies } = useSettingsRuntimePolicyOps({
   error,
   loading,
@@ -910,6 +1343,7 @@ const {
 const handleCreateModel = async (): Promise<void> => {
   const created = await createModel();
   if (created) {
+    resetNewDraftState();
     clearNewModelConnection();
     activeDrawer.value = null;
   }
@@ -990,6 +1424,7 @@ const openImportDrawer = (): void => {
 };
 
 const openCreateDrawer = (): void => {
+  resetNewDraftState();
   clearNewModelConnection();
   inspectorTab.value = 'model';
   activeDrawer.value = 'create';
@@ -1484,6 +1919,154 @@ const scrollToSection = (section: SettingsSectionKey): void => {
   flex-wrap: wrap;
 }
 
+.settings-drawer__advanced {
+  margin: 0;
+}
+
+.settings-drawer__advanced-body {
+  display: grid;
+  gap: 14px;
+}
+
+.settings-template-step {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--surface-panel-soft);
+  box-shadow: var(--shadow-sm);
+}
+
+.settings-template-step__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: start;
+}
+
+.settings-template-type-grid,
+.settings-template-vendor-grid,
+.settings-template-form-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.settings-template-type-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settings-template-vendor-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settings-template-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settings-template-type-card,
+.settings-template-card {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.settings-template-type-card {
+  padding: 14px;
+}
+
+.settings-template-card {
+  padding: 14px;
+}
+
+.settings-template-type-card strong,
+.settings-template-card strong {
+  font-size: var(--text-base);
+}
+
+.settings-template-type-card span,
+.settings-template-card p {
+  color: var(--ink-2);
+}
+
+.settings-template-type-card--active,
+.settings-template-card--active {
+  border-color: var(--brand-line-strong);
+  background: linear-gradient(180deg, var(--brand-tint-strong), var(--card));
+  box-shadow: var(--selection-shadow-float);
+}
+
+.settings-template-card__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.settings-template-preview {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--brand-line);
+  background: var(--surface-highlight);
+}
+
+.settings-template-preview__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.settings-template-preview__facts div {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--surface-glass);
+}
+
+.settings-template-preview__facts span {
+  color: var(--ink-2);
+  font-size: var(--text-xs);
+}
+
+.settings-template-preview__facts strong {
+  overflow-wrap: anywhere;
+}
+
+.settings-template-field {
+  display: grid;
+  gap: 6px;
+}
+
+.settings-template-field span {
+  font-size: var(--text-xs);
+  color: var(--ink-2);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.settings-template-field--wide {
+  grid-column: 1 / -1;
+}
+
+.settings-template-inline-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-template-rule-panel {
+  margin: 0;
+}
+
 .settings-drawer__footer {
   justify-content: flex-end;
   position: sticky;
@@ -1587,7 +2170,9 @@ const scrollToSection = (section: SettingsSectionKey): void => {
   .settings-model-catalog__header,
   .settings-model-card__title-row,
   .settings-drawer__header,
-  .settings-toolbar {
+  .settings-toolbar,
+  .settings-template-step__head,
+  .settings-template-card__head {
     flex-direction: column;
     align-items: stretch;
   }
@@ -1617,8 +2202,16 @@ const scrollToSection = (section: SettingsSectionKey): void => {
 
   .settings-toolbar__sections,
   .settings-toolbar__actions,
-  .settings-model-catalog__filters {
+  .settings-model-catalog__filters,
+  .settings-template-inline-facts {
     width: 100%;
+  }
+
+  .settings-template-type-grid,
+  .settings-template-vendor-grid,
+  .settings-template-form-grid,
+  .settings-template-preview__facts {
+    grid-template-columns: 1fr;
   }
 }
 </style>

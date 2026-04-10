@@ -30,6 +30,59 @@ AI 动漫创作平台的工作流引擎。Organize your projects by Drama and Ep
   - 视频生成
   - 音频/TTS 合成
 
+## 界面预览
+
+### 登录与项目入口
+
+<p align="center">
+  <img src="assets/登录页.png" alt="登录页" width="48%" />
+  <img src="assets/projects.png" alt="项目列表" width="48%" />
+</p>
+
+登录后直接进入项目目录，按 Drama / Episode 组织创作，不再把剧本、分镜、资产和生成任务拆散到不同后台页面。
+
+### Drama 与工作台
+
+<p align="center">
+  <img src="assets/drama.png" alt="Drama Hub" width="48%" />
+  <img src="assets/workbench1.png" alt="工作台预览 1" width="48%" />
+</p>
+
+<p align="center">
+  <img src="assets/workbench2.png" alt="工作台预览 2" width="48%" />
+</p>
+
+从 Drama Hub 进入后，可以继续下钻到剧本、分镜、资产、批处理和时间线工作台，覆盖从前期创作到生产交付的完整链路。
+
+### 设置中心
+
+<p align="center">
+  <img src="assets/settings1.png" alt="设置中心总览" width="48%" />
+  <img src="assets/settings-runtime.png" alt="设置中心 Runtime 面板" width="48%" />
+</p>
+
+<p align="center">
+  <img src="assets/settings-models.png" alt="模型连接列表" width="48%" />
+  <img src="assets/settings-add-model.png" alt="新增模型配置抽屉" width="48%" />
+</p>
+
+<p align="center">
+  <img src="assets/settings-api-paste.png" alt="粘贴 API 示例导入模型" width="48%" />
+  <img src="assets/settings-prompt.png" alt="Prompt 模板面板" width="48%" />
+</p>
+
+<p align="center">
+  <img src="assets/settings-tasks.png" alt="任务策略与运行边界" width="48%" />
+  <img src="assets/settings-back-logs.png" alt="日志与运维面板" width="48%" />
+</p>
+
+设置中心现在已经收敛成一个桌面式工作台：
+
+- 模型库支持按 `text / image / video / audio` 选择能力类型
+- 新增模型时优先选择厂商模板，再填写真实模型、API Key 和 endpoint
+- 支持直接粘贴 `curl / requests / OpenAI SDK` 示例自动回填
+- Runtime、Prompt、日志、备份与迁移都集中在同一页完成
+
 ## Tech Stack
 
 - **Backend**: Node.js + Express + SQLite + TypeScript
@@ -85,7 +138,7 @@ yarn dev
 
 ## AI 厂商配置
 
-应用支持多种 AI 服务商。可以通过 **设置 → 模型连接** 进行配置:
+应用支持多种 AI 服务商，可以通过 **设置中心 → 新增模型** 快速接入：
 
 1. **DashScope** (阿里云) - 文本、图像、视频、音频
 2. **OpenAI** - 文本、图像、视频
@@ -96,11 +149,14 @@ yarn dev
 7. **Wan** (通义万相) - 图像生成
 8. **ElevenLabs** - 音频/TTS
 
-添加新厂商:
-1. 进入设置 → 模型连接
-2. 点击 "添加模型配置"
-3. 从 AI 厂商文档中粘贴 curl/requests 示例
-4. 系统会自动解析端点、模型和 API Key
+推荐配置流程:
+1. 进入设置中心，点击“新增模型”
+2. 先选择能力类型：`text / image / video / audio`
+3. 再选择厂商模板：`OpenAI / Gemini / Vidu / Volcengine / Kling / ModelScope ...`
+4. 填写真实模型名、API Key 和主 endpoint
+5. 如需微调 `capabilities JSON`、多端点或 `providerOptions` 规则，可展开“高级设置”
+
+如果你已经拿到厂商文档示例，也可以直接点击“导入 API 示例”，粘贴 `curl / Python requests / Python OpenAI SDK` 代码片段，系统会自动解析端点、模型、鉴权方式和能力预置。
 
 ## 项目结构
 

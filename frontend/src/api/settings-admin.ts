@@ -6,6 +6,8 @@ import type {
   ModelConnectionTestResult,
   ModelConfig,
   OpsSummary,
+  ProviderCatalogItem,
+  ProviderTemplateDescriptor,
   PromptTemplate,
   PromptTemplateVersion,
   ProviderLogBreakdown,
@@ -143,6 +145,12 @@ export const deleteModelConfig = (modelId: string): Promise<void> =>
 
 export const getProviderCapabilityPresets = (): Promise<Record<string, Record<string, Record<string, unknown>>>> =>
   request('/api/settings/providers/capability-presets');
+
+export const getProviderTemplates = (): Promise<ProviderTemplateDescriptor[]> =>
+  request('/api/settings/providers/templates');
+
+export const getProviderCatalog = (): Promise<ProviderCatalogItem[]> =>
+  request('/api/settings/providers/catalog');
 
 export const getProviderCapabilities = (): Promise<Record<string, Array<Record<string, unknown>>>> =>
   request('/api/settings/providers/capabilities');
